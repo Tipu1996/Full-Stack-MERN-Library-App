@@ -107,19 +107,20 @@ export const lendBook = async (
   next: NextFunction
 ) => {
   try {
-    const user = await userServices.lendBook(
-      req.params.bookId,
-      req.params.userId
-    )
-
     const book = await bookServices.lendBook(
       req.params.bookId,
       req.params.userId
     )
-    if (user === null) res.send('This books has already borrowed by the user')
-    else {
-      const return_statement = [book, user]
-      res.send(return_statement)
+    if (book !== null) {
+      const user = await userServices.lendBook(
+        req.params.bookId,
+        req.params.userId
+      )
+      if (user === null) res.send('This books has already borrowed by the user')
+      else {
+        const return_statement = [book, user]
+        res.send(return_statement)
+      }
     }
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {

@@ -15,13 +15,13 @@ const lendBook = async (
   bookId: string,
   userId: string
 ): Promise<UserDocument[]> => {
-  const foundUser: any = User.findOneAndUpdate(
+  const foundUser: any = await User.findOneAndUpdate(
     { _id: userId, borrowedBooks: { $nin: [bookId] } },
     { $push: { borrowedBooks: bookId } },
     { new: true }
   )
   if (!foundUser) {
-    throw new NotFoundError('Book not found')
+    throw new NotFoundError('Book has already been borrowed by the user')
   }
   return foundUser
 }
@@ -30,13 +30,13 @@ const returnBook = async (
   bookId: string,
   userId: string
 ): Promise<UserDocument[]> => {
-  const foundUser: any = User.findOneAndUpdate(
-    { _id: userId },
+  const foundUser: any = await User.findOneAndUpdate(
+    { _id: userId, borrowedBooks: { $in: [bookId] } },
     { $pull: { borrowedBooks: bookId } },
     { new: true }
   )
   if (!foundUser) {
-    throw new NotFoundError('Book not found')
+    throw new NotFoundError('Book is not in your borrowed list')
   }
   return foundUser
 }

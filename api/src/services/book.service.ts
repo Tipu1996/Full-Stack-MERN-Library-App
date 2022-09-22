@@ -67,8 +67,8 @@ const lendBook = async (
   bookId: string,
   userId: string
 ): Promise<BookDocument[]> => {
-  const foundBook: any = Book.findOneAndUpdate(
-    { _id: bookId },
+  const foundBook: any = await Book.findOneAndUpdate(
+    { _id: bookId, status: { $eq: 'available' } },
     {
       $set: {
         borrower: userId,
@@ -86,8 +86,8 @@ const lendBook = async (
 }
 
 const returnBook = async (bookId: string): Promise<BookDocument[]> => {
-  const foundBook: any = Book.findOneAndUpdate(
-    { _id: bookId },
+  const foundBook: any = await Book.findOneAndUpdate(
+    { _id: bookId, status: { $eq: 'borrowed' } },
     {
       $set: {
         borrower: null,
@@ -99,7 +99,7 @@ const returnBook = async (bookId: string): Promise<BookDocument[]> => {
     { new: true }
   )
   if (!foundBook) {
-    throw new NotFoundError('Book not found')
+    throw new NotFoundError('Book not found book service')
   }
   return foundBook
 }
