@@ -2,16 +2,18 @@ import mongoose, { Document } from 'mongoose'
 import { statusType } from '../types'
 
 export type BookDocument = Document & {
+  // _id: mongoose.Schema.Types.ObjectId
   title: string
   isbn: string
   description: string
   publisher: string
   authors: string[]
+  categories: string[]
   status: statusType
-  borrowerID: mongoose.Schema.Types.ObjectId | null
-  publishDate: string
-  borrowDate: string | null
-  returnDate: string | null
+  borrower: mongoose.Schema.Types.ObjectId | null
+  publishDate: Date
+  borrowDate: Date | null
+  returnDate: Date | null
 }
 
 const bookSchema = new mongoose.Schema({
@@ -35,25 +37,29 @@ const bookSchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+  categories: {
+    type: [String],
+    required: true,
+  },
   status: {
     type: String,
     required: true,
   },
-  borrowerId: {
+  borrower: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     default: null,
   },
   publishDate: {
-    type: String,
+    type: Date,
     required: true,
   },
   borrowDate: {
-    type: String,
+    type: Date,
     default: null,
   },
   returnDate: {
-    type: String,
+    type: Date,
     default: null,
   },
 })

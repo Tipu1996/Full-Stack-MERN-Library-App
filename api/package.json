@@ -27,7 +27,7 @@
     "dotenv": "^8.2.0",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
-    "express-session": "^1.17.3",
+    "exss-session": "^1.17.3",
     "http-proxy-middleware": "^2.0.6",
     "husky": "^4.2.3",
     "jest": "^28.1.3",
