@@ -66,8 +66,8 @@ const getByStatus = async (status: string): Promise<BookDocument[]> => {
 const lendBook = async (
   bookId: string,
   userId: string
-): Promise<BookDocument[]> => {
-  const foundBook: any = await Book.findOneAndUpdate(
+): Promise<BookDocument> => {
+  const foundBook = await Book.findOneAndUpdate(
     { _id: bookId, status: { $eq: 'available' } },
     {
       $set: {
@@ -85,8 +85,8 @@ const lendBook = async (
   return foundBook
 }
 
-const returnBook = async (bookId: string): Promise<BookDocument[]> => {
-  const foundBook: any = await Book.findOneAndUpdate(
+const returnBook = async (bookId: string): Promise<BookDocument> => {
+  const foundBook = await Book.findOneAndUpdate(
     { _id: bookId, status: { $eq: 'borrowed' } },
     {
       $set: {

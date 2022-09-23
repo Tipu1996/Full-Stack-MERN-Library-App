@@ -2,7 +2,6 @@ import mongoose, { Document } from 'mongoose'
 import { statusType } from '../types'
 
 export type BookDocument = Document & {
-  // _id: mongoose.Schema.Types.ObjectId
   title: string
   isbn: string
   description: string

@@ -1,5 +1,14 @@
-const Home = () => {
-  return <h1>HOME</h1>
-}
+import { Route, Routes } from "react-router-dom";
+import Table from "components/Table";
 
-export default Home
+const Home = () => {
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Table />} />
+      </Routes>
+    </>
+  );
+};
+
+export default Home;

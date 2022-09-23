@@ -7,15 +7,15 @@ const addUser = async (user: UserDocument): Promise<UserDocument> => {
 
 const getUsers = async (): Promise<UserDocument[]> => {
   return User.find()
-    .sort({ name: 1 /*publishedYear: -1*/ })
+    .sort({ firstName: 1 /*publishedYear: -1*/ })
     .populate('borrowedBooks')
 }
 
 const lendBook = async (
   bookId: string,
   userId: string
-): Promise<UserDocument[]> => {
-  const foundUser: any = await User.findOneAndUpdate(
+): Promise<UserDocument> => {
+  const foundUser = await User.findOneAndUpdate(
     { _id: userId, borrowedBooks: { $nin: [bookId] } },
     { $push: { borrowedBooks: bookId } },
     { new: true }
@@ -29,8 +29,8 @@ const lendBook = async (
 const returnBook = async (
   bookId: string,
   userId: string
-): Promise<UserDocument[]> => {
-  const foundUser: any = await User.findOneAndUpdate(
+): Promise<UserDocument> => {
+  const foundUser = await User.findOneAndUpdate(
     { _id: userId, borrowedBooks: { $in: [bookId] } },
     { $pull: { borrowedBooks: bookId } },
     { new: true }
