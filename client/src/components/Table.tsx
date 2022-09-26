@@ -11,15 +11,27 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 // import Button from "@mui/material/Button";
 import TableRow from "@mui/material/TableRow";
-// import ImportExportIcon from "@mui/icons-material/ImportExport";
+import SearchFilter from "./SearchFilter";
+import { Box } from "@mui/material";
 
 const TableDisplay = () => {
   const dispatch = useDispatch<AppDispatch>();
   let state = useSelector((state: RootState) => state);
   let allBooks: Book[] = state.list;
   useEffect(() => {
-    dispatch(getBooks());
+    dispatch(
+      getBooks({
+        searchBy: "getAll",
+        url: "http://localhost:4000/api/v1/books/",
+        bookToAdd: null,
+      })
+    );
   }, [dispatch]);
+
+  function filterSearch() {
+    allBooks = state.list;
+  }
+
   return (
     <>
       <Paper
@@ -29,37 +41,47 @@ const TableDisplay = () => {
           overflow: "hidden",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: "10px",
+          paddingTop: "20px",
         }}
       >
-        <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Title</TableCell>
-                <TableCell>ISBN</TableCell>
-                <TableCell>Authors</TableCell>
-                <TableCell>Categories</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {allBooks.map((book) => (
-                <TableRow key={book.title}>
-                  <TableCell align={"left"}>{book.title}</TableCell>
-                  <TableCell align={"left"}>{book.isbn}</TableCell>
-                  <TableCell align={"left"}>
-                    {book.authors.join(", ")}
-                  </TableCell>
-                  <TableCell align={"left"}>
-                    {book.categories.join(", ")}
-                  </TableCell>
-                  <TableCell align={"left"}>{book.status}</TableCell>
+        <Box
+          display="flex"
+          alignItems="center"
+          flexDirection={"column"}
+          sx={{ minWidth: "95%" }}
+        >
+          <Box sx={{ paddingBottom: "20px" }}>
+            <SearchFilter filterSearch={filterSearch} />
+          </Box>
+          <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell>ISBN</TableCell>
+                  <TableCell>Authors</TableCell>
+                  <TableCell>Categories</TableCell>
+                  <TableCell>Status</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {allBooks.map((book) => (
+                  <TableRow key={book.title}>
+                    <TableCell align={"left"}>{book.title}</TableCell>
+                    <TableCell align={"left"}>{book.isbn}</TableCell>
+                    <TableCell align={"left"}>
+                      {book.authors.join(", ")}
+                    </TableCell>
+                    <TableCell align={"left"}>
+                      {book.categories.join(", ")}
+                    </TableCell>
+                    <TableCell align={"left"}>{book.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Paper>
     </>
   );

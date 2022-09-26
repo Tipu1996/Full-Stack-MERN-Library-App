@@ -10,6 +10,10 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import ThemeChange from "./ThemeChange";
+import { Badge } from "@mui/material";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
@@ -29,54 +33,49 @@ const Header = () => {
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <LibraryBooksIcon
-            sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
-          />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LIBRARY
-          </Typography>
+        <Toolbar
+          disableGutters
+          sx={{
+            justifyContent: "space-between",
+          }}
+        >
+          <Box display="flex" alignItems="center">
+            <LibraryBooksIcon sx={{ mr: 3 }} />
+            <Typography
+              variant="h6"
+              component="a"
+              href="/"
+              sx={{
+                mr: 2,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".3rem",
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              LIBRARY
+            </Typography>
+          </Box>
 
-          <LibraryBooksIcon
-            sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
-          />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LIBRARY
-          </Typography>
+          <Box display="flex" alignItems="center" flexDirection={"row"}>
+            <Box sx={{ display: { xs: "flex", md: "flex" } }}>
+              <Badge color="error">
+                <ThemeChange />
+              </Badge>
+            </Box>
+            <Link
+              to="/admin"
+              style={{ textDecoration: "none", color: "white" }}
+            >
+              <Button variant="outlined" color="inherit">
+                Admin
+              </Button>
+            </Link>
 
-          <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Tipu" src="/static/images/avatar/2.jpg" />
+                <Avatar>User</Avatar>
               </IconButton>
             </Tooltip>
             <Menu

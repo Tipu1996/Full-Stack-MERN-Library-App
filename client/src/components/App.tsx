@@ -21,13 +21,21 @@ const App = () => {
   const theme = useMemo(
     () =>
       createTheme({
+        components: {
+          MuiAppBar: {
+            styleOverrides: {
+              colorPrimary: {
+                backgroundColor: mode === "light" ? "#142b70" : "#5d1049",
+              },
+            },
+          },
+        },
         palette: {
           mode,
         },
       }),
     [mode]
   );
-  console.log(theme);
 
   return (
     <ColorModeContext.Provider value={colorMode}>

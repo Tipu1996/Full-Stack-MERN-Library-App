@@ -26,7 +26,6 @@ export const getByTitle = async (
   next: NextFunction
 ) => {
   try {
-    console.log(req.params.title)
     res.json(await bookServices.getByTitle(req.params.title))
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {

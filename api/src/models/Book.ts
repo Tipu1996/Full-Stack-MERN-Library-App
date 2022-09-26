@@ -43,6 +43,7 @@ const bookSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
+    default: 'available',
   },
   borrower: {
     type: mongoose.Schema.Types.ObjectId,
