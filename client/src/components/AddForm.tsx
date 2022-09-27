@@ -40,7 +40,7 @@ const AddForm = () => {
     dispatch(
       addBook({
         searchBy: "addBook",
-        url: `http://localhost:4000/api/v1/books/`,
+        url: `http://localhost:4000/api/v1/books`,
         bookToAdd: book,
       })
     );

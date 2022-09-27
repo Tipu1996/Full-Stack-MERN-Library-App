@@ -39,9 +39,7 @@ export const addBook = createAsyncThunk(
   "books/addBook",
   async ({ searchBy, url, bookToAdd }: asyncObject) => {
     if (searchBy === "addBook") {
-      return axios
-        .post(url, JSON.stringify(bookToAdd))
-        .then((response) => response.data);
+      return axios.post(url, bookToAdd).then((response) => response.data);
     }
   }
 );

@@ -2,9 +2,7 @@ import Book, { BookDocument } from '../models/Book'
 import { NotFoundError } from '../helpers/apiError'
 
 const getAll = async (): Promise<BookDocument[]> => {
-  return Book.find()
-    .sort({ name: 1 /*publishedYear: -1*/ })
-    .populate('borrower')
+  return Book.find().sort({ title: 1 }).populate('borrower')
 }
 
 const getByTitle = async (title: string): Promise<BookDocument[]> => {
