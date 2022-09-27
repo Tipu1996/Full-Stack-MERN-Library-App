@@ -100,6 +100,14 @@ const Header = () => {
                 </MenuItem>
               ))}
             </Menu>
+            <Link
+              to="/login"
+              style={{ textDecoration: "none", color: "white" }}
+            >
+              <Button variant="outlined" color="inherit">
+                Login
+              </Button>
+            </Link>
           </Box>
         </Toolbar>
       </Container>

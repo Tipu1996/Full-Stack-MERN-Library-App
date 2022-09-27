@@ -1,8 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Table from "components/Table";
 import Admin from "./Admin";
-
-import { GoogleLogin } from "@react-oauth/google";
+import Login from "./LoginPage";
 
 const Home = () => {
   return (
@@ -10,16 +9,8 @@ const Home = () => {
       <Routes>
         <Route path="/" element={<Table />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
-      <GoogleLogin
-        onSuccess={(credentialResponse) => {
-          console.log(credentialResponse);
-        }}
-        onError={() => {
-          console.log("Login Failed");
-        }}
-      />
-      ;
     </>
   );
 };

@@ -21,7 +21,6 @@ root.render(
         </Router>
       </Provider>
     </GoogleOAuthProvider>
-    ;
   </React.StrictMode>
 );
 

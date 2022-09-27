@@ -5,7 +5,8 @@ import config from 'config'
 // import data from './config/custom-environment-variables.json'
 // import session from 'express-session'
 // import cookieParser from 'cookie-parser'
-// import passport from 'passport'
+import passport from 'passport'
+import loginWithGoogle from './passport/google'
 
 import apiErrorHandler from './middlewares/apiErrorHandler'
 import apiContentType from './middlewares/apiContentType'
@@ -46,9 +47,11 @@ app.use(
     secret: 'secret',
   })
 )
-app.use(passport.initialize())
-app.use(passport.session())
 */
+
+// app.use(passport.session())
+app.use(passport.initialize())
+passport.use(loginWithGoogle())
 
 // Set up routers
 app.use('/api/v1/movies', movieRouter)
