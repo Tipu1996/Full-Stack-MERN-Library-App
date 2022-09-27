@@ -1,14 +1,21 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Model, Document } from 'mongoose'
+import jwt from 'jsonwebtoken'
 
 export type UserDocument = Document & {
-  // _id: mongoose.Schema.Types.ObjectId
   firstName: string
   lastName: string
   email: string
+  password: string
   borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }
 
-const userSchema = new mongoose.Schema({
+// interface UserToken extends Model<UserDocument> {
+//   generateAuthToken(): string
+// }
+
+// type UserModel = Model<UserDocument, UserToken>
+
+const userSchema = new mongoose.Schema<UserDocument>({
   firstName: {
     type: String,
     required: true,
@@ -22,6 +29,12 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  password: {
+    type: String,
+    unique: true,
+    required: true,
+    minLength: 5,
+  },
   borrowedBooks: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Book',
@@ -29,4 +42,10 @@ const userSchema = new mongoose.Schema({
   },
 })
 
-export default mongoose.model<UserDocument>('User', userSchema)
+// userSchema.method('generateAuthToken', function generateAuthToken() {
+//   return jwt.sign({ _id: this._id }, 'mySecret')
+// })
+
+const User = mongoose.model<UserDocument>('User', userSchema)
+
+export default User

@@ -1,5 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
+// const Joi = require('joi')
+import config from 'config'
+import jwt from 'jsonwebtoken'
 import userServices from '../services/user.service'
+import bcrypt from 'bcrypt'
 import { BadRequestError } from '../helpers/apiError'
 import User from '../models/User'
 
@@ -15,15 +19,58 @@ export const addUser = async (
         .status(400)
         .send(`user with email: ${req.body.email} already registered`)
     }
-    const { firstName, lastName, email, borrowedBooks } = req.body
+    const { firstName, lastName, email, password, borrowedBooks } = req.body
+
     const user = new User({
       firstName,
       lastName,
       email,
+      password,
       borrowedBooks,
     })
+
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(user.password, salt)
+
     await userServices.addUser(user)
-    res.send(user)
+
+    const token = jwt.sign({ _id: user._id }, 'mySecret')
+
+    res.header('x-auth-token', token).send(user)
+  } catch (error) {
+    if (error instanceof Error && error.name == 'ValidationError') {
+      next(new BadRequestError('Invalid Request', 400, error))
+    } else {
+      next(error)
+    }
+  }
+}
+
+export const authUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // const { error } = validate(req.body)
+    // if (error) return res.status(400).send(error.details[0].message)
+
+    const existingUser = await User.findOne({
+      email: req.body.email,
+    })
+    if (!existingUser) return res.status(400).send('invalid email or password')
+
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      existingUser.password
+    )
+
+    if (!validPassword) return res.status(400).send('invalid email or password')
+
+    // const token = existingUser.generateAuthToken()
+    const token = jwt.sign({ _id: existingUser._id }, 'mySecret')
+
+    res.send(typeof token)
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', 400, error))
@@ -48,3 +95,11 @@ export const getUsers = async (
     }
   }
 }
+
+// function validate(req: Request) {
+//   const schema = {
+//     email: Joi.string().required.email(),
+//     password: Joi.string().min(5).required.email(),
+//   }
+//   return Joi.validate(req, schema)
+// }

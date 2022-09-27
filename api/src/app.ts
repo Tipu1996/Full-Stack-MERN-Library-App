@@ -1,6 +1,8 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import config from 'config'
+// import data from './config/custom-environment-variables.json'
 // import session from 'express-session'
 // import cookieParser from 'cookie-parser'
 // import passport from 'passport'
@@ -13,6 +15,11 @@ import userRouter from './routers/user.router'
 
 dotenv.config({ path: '.env' })
 const app = express()
+
+// if (!config.get(data.jwtPrivateKey)) {
+//   console.error('Fatal Error: jwtPrivateKey is not defined')
+//   process.exit(1)
+// }
 
 // Express configuration
 app.set('port', process.env.PORT)
