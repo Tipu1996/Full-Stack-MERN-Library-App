@@ -1,5 +1,4 @@
 import mongoose, { Model, Document } from 'mongoose'
-import jwt from 'jsonwebtoken'
 
 export type UserDocument = Document & {
   _id?: mongoose.Schema.Types.ObjectId
@@ -9,12 +8,6 @@ export type UserDocument = Document & {
   isAdmin: boolean
   borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }
-
-// interface UserToken extends Model<UserDocument> {
-//   generateAuthToken(): string
-// }
-
-// type UserModel = Model<UserDocument, UserToken>
 
 const userSchema = new mongoose.Schema<UserDocument>({
   firstName: {
@@ -40,10 +33,6 @@ const userSchema = new mongoose.Schema<UserDocument>({
     default: [],
   },
 })
-
-// userSchema.method('generateAuthToken', function generateAuthToken() {
-//   return jwt.sign({ _id: this._id }, 'mySecret')
-// })
 
 const User = mongoose.model<UserDocument>('User', userSchema)
 

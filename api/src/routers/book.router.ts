@@ -1,4 +1,5 @@
 import express from 'express'
+import authCheck from '../middlewares/authCheck'
 
 import {
   getByTitle,
@@ -14,7 +15,7 @@ import {
 
 const router = express.Router()
 
-router.get('/', getAll)
+router.get('/', authCheck, getAll)
 router.get('/title/:title', getByTitle)
 router.get('/author/:author', getByAuthor)
 router.get('/category/:category', getByCategory)

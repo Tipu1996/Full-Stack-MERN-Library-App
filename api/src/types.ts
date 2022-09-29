@@ -33,3 +33,12 @@ export interface ParsedToken {
 export interface VerifiedCallback {
   (error: any, user?: any, info?: any): void
 }
+
+export type UserDocument = Document & {
+  _id?: mongoose.Schema.Types.ObjectId
+  firstName: string
+  lastName: string
+  email: string
+  isAdmin: boolean
+  borrowedBooks: mongoose.Schema.Types.ObjectId[]
+}

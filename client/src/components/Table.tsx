@@ -16,19 +16,22 @@ import { Box } from "@mui/material";
 const TableDisplay = () => {
   const dispatch = useDispatch<AppDispatch>();
   let state = useSelector((state: RootState) => state);
-  let allBooks: Book[] = state.list;
+  let allBooks: Book[] = state.books.list;
   useEffect(() => {
-    dispatch(
-      getBooks({
-        searchBy: "getAll",
-        url: "http://localhost:4000/api/v1/books/",
-        bookToAdd: null,
-      })
-    );
-  }, [dispatch]);
+    if (state.users.jwtToken) {
+      dispatch(
+        getBooks({
+          jwtToken: state.users.jwtToken,
+          searchBy: "getAll",
+          url: "http://localhost:4000/api/v1/books/",
+          bookToAdd: null,
+        })
+      );
+    }
+  }, [dispatch, state.users.jwtToken]);
 
   function filterSearch() {
-    allBooks = state.list;
+    allBooks = state.books.list;
   }
 
   return (

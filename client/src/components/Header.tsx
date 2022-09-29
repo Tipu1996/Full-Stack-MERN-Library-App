@@ -39,24 +39,25 @@ const Header = () => {
             justifyContent: "space-between",
           }}
         >
-          <Box display="flex" alignItems="center">
-            <LibraryBooksIcon sx={{ mr: 3 }} />
-            <Typography
-              variant="h6"
-              component="a"
-              href="/"
-              sx={{
-                mr: 2,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                letterSpacing: ".3rem",
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              LIBRARY
-            </Typography>
-          </Box>
+          <Link to="/" style={{ textDecoration: "none", color: "white" }}>
+            <Box display="flex" alignItems="center">
+              <LibraryBooksIcon sx={{ mr: 3 }} />
+              <Typography
+                variant="h6"
+                component="a"
+                sx={{
+                  mr: 2,
+                  fontFamily: "monospace",
+                  fontWeight: 700,
+                  letterSpacing: ".3rem",
+                  color: "inherit",
+                  textDecoration: "none",
+                }}
+              >
+                LIBRARY
+              </Typography>
+            </Box>
+          </Link>
 
           <Box display="flex" alignItems="center" flexDirection={"row"}>
             <Box sx={{ display: { xs: "flex", md: "flex" } }}>

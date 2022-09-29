@@ -1,6 +1,4 @@
-import { response } from 'express'
 import GoogleTokenStrategy from 'passport-google-id-token'
-import { exit } from 'process'
 import User from '../models/User'
 import { VerifiedCallback, ParsedToken } from '../types'
 import { GOOGLE_CLIENT_ID } from '../util/secrets'

@@ -16,13 +16,20 @@ interface asyncObject {
   searchBy: string;
   url: string;
   bookToAdd: object | null;
+  jwtToken?: string | null;
 }
 
 export const getBooks = createAsyncThunk(
   "books/getBooks",
-  async ({ searchBy, url, bookToAdd }: asyncObject) => {
+  async ({ searchBy, url, jwtToken }: asyncObject) => {
     if (searchBy === "getAll") {
-      return axios.get(url).then((response) => response.data);
+      return axios
+        .get(url, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        })
+        .then((response) => response.data);
     } else if (searchBy === "getByTitle") {
       return axios.get(url).then((response) => response.data);
     } else if (searchBy === "getByAuthor") {

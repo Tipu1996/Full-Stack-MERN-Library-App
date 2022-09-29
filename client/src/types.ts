@@ -96,3 +96,12 @@ export const columns: readonly Column[] = [
     align: "left",
   },
 ];
+
+export type User = {
+  _id: mongoose.Schema.Types.ObjectId;
+  firstName: string;
+  lastName: string;
+  email: string;
+  isAdmin: boolean;
+  borrowedBooks: mongoose.Schema.Types.ObjectId[];
+};

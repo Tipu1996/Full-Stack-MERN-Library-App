@@ -1,6 +1,5 @@
 import User, { UserDocument } from '../models/User'
 import { NotFoundError } from '../helpers/apiError'
-import { response } from 'express'
 
 const addUser = async (user: UserDocument): Promise<UserDocument> => {
   return user.save()
