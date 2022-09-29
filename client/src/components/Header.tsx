@@ -44,7 +44,7 @@ const Header = () => {
               <LibraryBooksIcon sx={{ mr: 3 }} />
               <Typography
                 variant="h6"
-                component="a"
+                component="h2"
                 sx={{
                   mr: 2,
                   fontFamily: "monospace",

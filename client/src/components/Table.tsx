@@ -18,16 +18,18 @@ const TableDisplay = () => {
   let state = useSelector((state: RootState) => state);
   let allBooks: Book[] = state.books.list;
   useEffect(() => {
-    if (state.users.jwtToken) {
+    const token = localStorage.getItem("jwtToken") || null;
+    // if (state.users.jwtToken)
+    if (token)
       dispatch(
         getBooks({
-          jwtToken: state.users.jwtToken,
+          // jwtToken: state.users.jwtToken,
+          jwtToken: token,
           searchBy: "getAll",
           url: "http://localhost:4000/api/v1/books/",
           bookToAdd: null,
         })
       );
-    }
   }, [dispatch, state.users.jwtToken]);
 
   function filterSearch() {

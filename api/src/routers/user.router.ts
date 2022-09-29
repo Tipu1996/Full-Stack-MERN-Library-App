@@ -22,7 +22,7 @@ router.post(
       { userId: user._id, isAdmin: user.isAdmin },
       JWT_SECRET,
       {
-        expiresIn: '1h',
+        expiresIn: '10m',
       }
     )
     res.json({ token })

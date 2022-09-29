@@ -23,6 +23,7 @@ const Login = () => {
     );
     async function displayJWT() {
       console.log("jwt token: ", jwt.payload.token);
+      localStorage.setItem("jwtToken", jwt.payload.token);
     }
     displayJWT();
   };
