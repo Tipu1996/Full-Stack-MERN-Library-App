@@ -14,10 +14,13 @@ import ThemeChange from "./ThemeChange";
 import { Badge } from "@mui/material";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
+import { RootState } from "redux/store";
+import { useSelector } from "react-redux";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 const Header = () => {
+  let state = useSelector((state: RootState) => state);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -27,6 +30,7 @@ const Header = () => {
   };
 
   const handleCloseUserMenu = () => {
+    localStorage.removeItem("jwtToken");
     setAnchorElUser(null);
   };
 
@@ -95,11 +99,22 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key={settings[0]} onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">{settings[0]}</Typography>
+              </MenuItem>
+              <MenuItem key={settings[1]} onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">{settings[1]}</Typography>
+              </MenuItem>
+              <MenuItem key={settings[2]} onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">{settings[2]}</Typography>
+              </MenuItem>
+              <MenuItem key={settings[3]} onClick={handleCloseUserMenu}>
+                {state.users.jwtToken !== null ? (
+                  <Typography textAlign="center">Logout</Typography>
+                ) : (
+                  <Typography textAlign="center">Login</Typography>
+                )}
+              </MenuItem>
             </Menu>
             <Link
               to="/login"

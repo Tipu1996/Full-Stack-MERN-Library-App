@@ -45,7 +45,6 @@ const slice = createSlice({
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.jwtToken = action.payload.token;
-      console.log("action.payload is : ", action.payload.token);
       state.status = "success";
     });
     builder.addCase(loginUser.rejected, (state) => {
