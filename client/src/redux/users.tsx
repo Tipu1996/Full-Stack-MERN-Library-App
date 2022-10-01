@@ -6,12 +6,14 @@ export interface usersState {
   list: User[];
   status: string;
   jwtToken: string | null;
+  isAdmin: boolean;
 }
 
 const initialState: usersState = {
   list: [],
   status: "",
   jwtToken: null,
+  isAdmin: false,
 };
 
 interface asyncObject {
@@ -45,6 +47,9 @@ const slice = createSlice({
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.jwtToken = action.payload.token;
+      state.isAdmin = action.payload.isAdmin;
+      localStorage.setItem("isAdmin", action.payload.isAdmin);
+      localStorage.setItem("signedIn", "yes");
       state.status = "success";
     });
     builder.addCase(loginUser.rejected, (state) => {

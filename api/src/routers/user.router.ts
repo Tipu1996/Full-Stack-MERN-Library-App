@@ -16,15 +16,13 @@ router.post(
     const user: any = req.user
     const info: any = req.authInfo
     // console.log('reached this stage: ', user._id)
-    const token = jwt.sign(
-      { userId: user._id.toString(), isAdmin: user.isAdmin },
-      JWT_SECRET,
-      {
-        expiresIn: '10m',
-      }
-    )
+    const id = user._id.toString()
+    const isAdmin = user.isAdmin
+    const token = jwt.sign({ userId: id, isAdmin }, JWT_SECRET, {
+      expiresIn: '10m',
+    })
 
-    res.json({ token, info })
+    res.json({ token, id, isAdmin, info })
   }
 )
 router.get('/', authCheck, getUsers)

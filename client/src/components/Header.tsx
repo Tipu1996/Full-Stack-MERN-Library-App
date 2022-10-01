@@ -5,35 +5,18 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import jwt_decode from "jwt-decode";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import ThemeChange from "./ThemeChange";
 import { Badge } from "@mui/material";
-import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-import { RootState } from "redux/store";
-import { useSelector } from "react-redux";
-
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
-type decodedUser = {
-  userId: String;
-  isAdmin: boolean;
-  iat: number;
-  exp: number;
-};
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
-  let state = useSelector((state: RootState) => state);
-  const [user, setUser] = React.useState<decodedUser | null>(null);
-  React.useEffect(() => {
-    // const token = localStorage.getItem("jwtToken") || "";
-    // const decoded = jwt_decode(token) as decodedUser;
-    // // setUser(decoded);
-  }, []);
+  const navigate = useNavigate();
+  // let state = useSelector((state: RootState) => state);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -43,7 +26,9 @@ const Header = () => {
   };
 
   const handleCloseUserMenu = () => {
-    // localStorage.removeItem("jwtToken");
+    localStorage.getItem("signedIn") === "yes"
+      ? localStorage.clear()
+      : navigate("/login");
     setAnchorElUser(null);
   };
 
@@ -81,18 +66,10 @@ const Header = () => {
                 <ThemeChange />
               </Badge>
             </Box>
-            <Link
-              to="/admin"
-              style={{ textDecoration: "none", color: "white" }}
-            >
-              <Button variant="outlined" color="inherit">
-                Admin
-              </Button>
-            </Link>
 
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar>User</Avatar>
+                <Avatar src="/broken-image.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -111,31 +88,32 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem key={settings[0]} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{settings[0]}</Typography>
-              </MenuItem>
-              <MenuItem key={settings[1]} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{settings[1]}</Typography>
-              </MenuItem>
-              <MenuItem key={settings[2]} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">{settings[2]}</Typography>
-              </MenuItem>
-              <MenuItem key={settings[3]} onClick={handleCloseUserMenu}>
-                {state.users.jwtToken !== null ? (
+              {localStorage.getItem("isAdmin") === "true" ? (
+                <MenuItem
+                  key="admin"
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    navigate("/admin");
+                  }}
+                >
+                  <Link
+                    to="/admin"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
+                    <Typography textAlign="center">Admin</Typography>
+                  </Link>
+                </MenuItem>
+              ) : (
+                ""
+              )}
+              <MenuItem key="signingInOrOut" onClick={handleCloseUserMenu}>
+                {localStorage.getItem("signedIn") === "yes" ? (
                   <Typography textAlign="center">Logout</Typography>
                 ) : (
                   <Typography textAlign="center">Login</Typography>
                 )}
               </MenuItem>
             </Menu>
-            <Link
-              to="/login"
-              style={{ textDecoration: "none", color: "white" }}
-            >
-              <Button variant="outlined" color="inherit">
-                Login
-              </Button>
-            </Link>
           </Box>
         </Toolbar>
       </AppBar>

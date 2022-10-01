@@ -21,7 +21,7 @@ export default function () {
             email: parsedToken.payload.email,
             firstName: parsedToken.payload.given_name,
             lastName: parsedToken.payload.family_name,
-            isAdmin: true,
+            isAdmin: false,
           })
           // console.log('user is saved:', user)
           user.save()

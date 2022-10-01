@@ -38,7 +38,6 @@ const TableDisplay = () => {
 
   return (
     <>
-      {/* {localStorage.getItem("jwtToken") ? ( */}
       <Paper
         sx={{
           display: "flex",
@@ -88,9 +87,6 @@ const TableDisplay = () => {
           </TableContainer>
         </Box>
       </Paper>
-      {/* // ) : (
-      //   <Navigate to="/login" state={{ prev: location.pathname }} />
-      // )} */}
     </>
   );
 };
