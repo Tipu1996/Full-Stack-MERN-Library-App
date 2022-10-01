@@ -64,6 +64,10 @@ const Login = () => {
           </CardContent>
           <CardActions>
             <GoogleLogin
+              shape="rectangular"
+              size="large"
+              theme="outline"
+              logo_alignment="center"
               onSuccess={handleGoogleOnSuccess}
               onError={handleGoogleOnFailure}
             />
