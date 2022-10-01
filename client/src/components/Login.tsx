@@ -1,13 +1,26 @@
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "redux/configureStore";
 import { loginUser } from "redux/users";
+// import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
+  // const navigate = useNavigate();
+  // const { state } = useLocation();
+  const [result, setResult] = useState("");
   const dispatch = useDispatch<AppDispatch>();
+  // const onLogin = () => navigate(state.prev);
   const handleGoogleOnSuccess = async (response: any) => {
-    // console.log("response :", response);
-    const jwt = await dispatch(
+    await dispatch(
       loginUser({
         body: {},
         url: `http://localhost:4000/api/v1/users/login`,
@@ -18,21 +31,43 @@ const Login = () => {
           },
         },
       })
-    );
-    async function setLocalStorageJWT() {
-      localStorage.setItem("jwtToken", jwt.payload.token);
-    }
-    setLocalStorageJWT();
+    ).then((data) => {
+      setResult(data.payload.info);
+      localStorage.setItem("jwtToken", data.payload.token);
+    });
+    // onLogin();
   };
 
   const handleGoogleOnFailure = () => {
     console.log("Login Failed");
   };
   return (
-    <GoogleLogin
-      onSuccess={handleGoogleOnSuccess}
-      onError={handleGoogleOnFailure}
-    />
+    <Box display="flex" alignItems="center" justifyContent="center">
+      <Card sx={{ minWidth: 275, width: "50%" }}>
+        <Grid>
+          <CardContent>
+            <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
+              Please Sign-in
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <GoogleLogin
+              onSuccess={handleGoogleOnSuccess}
+              onError={handleGoogleOnFailure}
+            />
+          </CardActions>
+          <CardContent>
+            <Typography
+              sx={{ fontSize: 14 }}
+              color="text.secondary"
+              gutterBottom
+            >
+              {result}
+            </Typography>
+          </CardContent>
+        </Grid>
+      </Card>
+    </Box>
   );
 };
 

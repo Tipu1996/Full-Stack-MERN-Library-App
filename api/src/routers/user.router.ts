@@ -14,18 +14,17 @@ router.post(
   passport.authenticate('google-id-token', { session: false }),
   (req, res) => {
     const user: any = req.user
-    console.log(
-      'newly registered user from backend(if empty then the user is already registered): ',
-      user
-    )
+    const info: any = req.authInfo
+    // console.log('reached this stage: ', user._id)
     const token = jwt.sign(
-      { userId: user._id, isAdmin: user.isAdmin },
+      { userId: user._id.toString(), isAdmin: user.isAdmin },
       JWT_SECRET,
       {
         expiresIn: '10m',
       }
     )
-    res.json({ token })
+
+    res.json({ token, info })
   }
 )
 router.get('/', authCheck, getUsers)

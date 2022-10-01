@@ -12,18 +12,18 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SearchFilter from "./SearchFilter";
 import { Box } from "@mui/material";
+// import { Navigate, useLocation } from "react-router-dom";
 
 const TableDisplay = () => {
+  // const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   let state = useSelector((state: RootState) => state);
   let allBooks: Book[] = state.books.list;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken") || null;
-    // if (state.users.jwtToken)
     if (token)
       dispatch(
         getBooks({
-          // jwtToken: state.users.jwtToken,
           jwtToken: token,
           searchBy: "getAll",
           url: "http://localhost:4000/api/v1/books/",
@@ -38,6 +38,7 @@ const TableDisplay = () => {
 
   return (
     <>
+      {/* {localStorage.getItem("jwtToken") ? ( */}
       <Paper
         sx={{
           display: "flex",
@@ -87,6 +88,9 @@ const TableDisplay = () => {
           </TableContainer>
         </Box>
       </Paper>
+      {/* // ) : (
+      //   <Navigate to="/login" state={{ prev: location.pathname }} />
+      // )} */}
     </>
   );
 };

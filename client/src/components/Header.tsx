@@ -5,7 +5,7 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
-import Container from "@mui/material/Container";
+import jwt_decode from "jwt-decode";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,8 +19,21 @@ import { useSelector } from "react-redux";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
+type decodedUser = {
+  userId: String;
+  isAdmin: boolean;
+  iat: number;
+  exp: number;
+};
+
 const Header = () => {
   let state = useSelector((state: RootState) => state);
+  const [user, setUser] = React.useState<decodedUser | null>(null);
+  React.useEffect(() => {
+    // const token = localStorage.getItem("jwtToken") || "";
+    // const decoded = jwt_decode(token) as decodedUser;
+    // // setUser(decoded);
+  }, []);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -30,15 +43,14 @@ const Header = () => {
   };
 
   const handleCloseUserMenu = () => {
-    localStorage.removeItem("jwtToken");
+    // localStorage.removeItem("jwtToken");
     setAnchorElUser(null);
   };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
         <Toolbar
-          disableGutters
           sx={{
             justifyContent: "space-between",
           }}
@@ -126,8 +138,8 @@ const Header = () => {
             </Link>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+    </Box>
   );
 };
 export default Header;
