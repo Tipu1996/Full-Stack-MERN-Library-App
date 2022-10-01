@@ -13,10 +13,23 @@ import ThemeChange from "./ThemeChange";
 import { Badge } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+
+export const tokenExpiry = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (token) {
+    const decodedUser: any = jwt_decode(token);
+    if (decodedUser.exp * 1000 < Date.now()) {
+      localStorage.clear();
+      return false;
+    } else return true;
+  }
+  return false;
+};
 
 const Header = () => {
   const navigate = useNavigate();
-  // let state = useSelector((state: RootState) => state);
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -25,10 +38,17 @@ const Header = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
-    localStorage.getItem("signedIn") === "yes"
-      ? localStorage.clear()
-      : navigate("/login");
+  React.useEffect(() => {
+    tokenExpiry();
+  });
+
+  const logout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  const handleCloseUserMenu = (prop: boolean) => {
+    if (prop === true) tokenExpiry() ? logout() : navigate("/login");
     setAnchorElUser(null);
   };
 
@@ -69,7 +89,11 @@ const Header = () => {
 
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src="/broken-image.jpg" />
+                {tokenExpiry() ? (
+                  <Avatar src={"/broken-image.jpg"} />
+                ) : (
+                  <Avatar src="/broken-image.jpg" />
+                )}
               </IconButton>
             </Tooltip>
             <Menu
@@ -92,7 +116,7 @@ const Header = () => {
                 <MenuItem
                   key="admin"
                   onClick={() => {
-                    handleCloseUserMenu();
+                    handleCloseUserMenu(false);
                     navigate("/admin");
                   }}
                 >
@@ -106,8 +130,11 @@ const Header = () => {
               ) : (
                 ""
               )}
-              <MenuItem key="signingInOrOut" onClick={handleCloseUserMenu}>
-                {localStorage.getItem("signedIn") === "yes" ? (
+              <MenuItem
+                key="signingInOrOut"
+                onClick={() => handleCloseUserMenu(true)}
+              >
+                {tokenExpiry() ? (
                   <Typography textAlign="center">Logout</Typography>
                 ) : (
                   <Typography textAlign="center">Login</Typography>

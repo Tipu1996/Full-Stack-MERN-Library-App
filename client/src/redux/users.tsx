@@ -7,6 +7,7 @@ export interface usersState {
   status: string;
   jwtToken: string | null;
   isAdmin: boolean;
+  picture: string;
 }
 
 const initialState: usersState = {
@@ -14,6 +15,7 @@ const initialState: usersState = {
   status: "",
   jwtToken: null,
   isAdmin: false,
+  picture: "",
 };
 
 interface asyncObject {
@@ -48,8 +50,10 @@ const slice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.jwtToken = action.payload.token;
       state.isAdmin = action.payload.isAdmin;
+      state.picture = action.payload.picture;
+      localStorage.setItem("jwtToken", action.payload.token);
       localStorage.setItem("isAdmin", action.payload.isAdmin);
-      localStorage.setItem("signedIn", "yes");
+      localStorage.setItem("picture", action.payload.picture);
       state.status = "success";
     });
     builder.addCase(loginUser.rejected, (state) => {

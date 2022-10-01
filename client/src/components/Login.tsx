@@ -7,18 +7,17 @@ import {
   Typography,
 } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
+import { useEffect } from "react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "redux/configureStore";
 import { loginUser } from "redux/users";
-// import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  // const navigate = useNavigate();
-  // const { state } = useLocation();
-  const [result, setResult] = useState("");
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  // const onLogin = () => navigate(state.prev);
+  const [loggedIn, setLoggedIn] = useState<string | null>("false");
   const handleGoogleOnSuccess = async (response: any) => {
     await dispatch(
       loginUser({
@@ -31,19 +30,32 @@ const Login = () => {
           },
         },
       })
-    ).then((data) => {
-      setResult(data.payload.info);
-      localStorage.setItem("jwtToken", data.payload.token);
+    ).then(() => {
+      localStorage.setItem("signedIn", "true");
+      setLoggedIn(localStorage.getItem("signedIn"));
+      navigate("/");
     });
-    // onLogin();
   };
+  useEffect(() => {
+    setLoggedIn(localStorage.getItem("signedIn"));
+  }, [loggedIn]);
 
   const handleGoogleOnFailure = () => {
     console.log("Login Failed");
   };
-  return (
+  return loggedIn !== "true" ? (
     <Box display="flex" alignItems="center" justifyContent="center">
-      <Card sx={{ minWidth: 275, width: "50%" }}>
+      <Card
+        sx={{
+          display: "flex",
+          minWidth: 275,
+          width: "50%",
+          mt: "20px",
+          pb: "30px",
+          textAlign: "center",
+          justifyContent: "center",
+        }}
+      >
         <Grid>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.primary" gutterBottom>
@@ -56,18 +68,11 @@ const Login = () => {
               onError={handleGoogleOnFailure}
             />
           </CardActions>
-          <CardContent>
-            <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
-              gutterBottom
-            >
-              {result}
-            </Typography>
-          </CardContent>
         </Grid>
       </Card>
     </Box>
+  ) : (
+    <h3>You are already loggedIn</h3>
   );
 };
 

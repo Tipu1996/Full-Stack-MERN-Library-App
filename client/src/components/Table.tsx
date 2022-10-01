@@ -17,7 +17,7 @@ import { Box } from "@mui/material";
 const TableDisplay = () => {
   // const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  let state = useSelector((state: RootState) => state);
+  const state = useSelector((state: RootState) => state);
   let allBooks: Book[] = state.books.list;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken") || null;

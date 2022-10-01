@@ -5,6 +5,7 @@ export type UserDocument = Document & {
   firstName: string
   lastName: string
   email: string
+  picture: string
   isAdmin: boolean
   borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }
@@ -22,6 +23,9 @@ const userSchema = new mongoose.Schema<UserDocument>({
     type: String,
     unique: true,
     required: true,
+  },
+  picture: {
+    type: String,
   },
   isAdmin: {
     type: Boolean,

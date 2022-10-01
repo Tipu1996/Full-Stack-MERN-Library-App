@@ -15,6 +15,7 @@ router.post(
   (req, res) => {
     const user: any = req.user
     const info: any = req.authInfo
+    const picture = user.picture
     // console.log('reached this stage: ', user._id)
     const id = user._id.toString()
     const isAdmin = user.isAdmin
@@ -22,7 +23,7 @@ router.post(
       expiresIn: '10m',
     })
 
-    res.json({ token, id, isAdmin, info })
+    res.json({ token, id, isAdmin, info, picture })
   }
 )
 router.get('/', authCheck, getUsers)

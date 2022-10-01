@@ -12,7 +12,7 @@ export default function () {
       done: VerifiedCallback
     ) => {
       try {
-        // console.log('parsedToken: ', parsedToken)
+        console.log('parsedToken: ', parsedToken)
         // console.log('googleId: ', googleId)
         let user = await User.findOne({ email: parsedToken.payload.email })
         if (!user) {
@@ -21,7 +21,11 @@ export default function () {
             email: parsedToken.payload.email,
             firstName: parsedToken.payload.given_name,
             lastName: parsedToken.payload.family_name,
-            isAdmin: false,
+            isAdmin:
+              parsedToken.payload.email === 'tipu.solehria@gmail'
+                ? false
+                : true,
+            picture: parsedToken.payload.picture,
           })
           // console.log('user is saved:', user)
           user.save()
