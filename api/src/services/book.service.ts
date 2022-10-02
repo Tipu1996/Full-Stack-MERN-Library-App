@@ -97,12 +97,17 @@ const returnBook = async (bookId: string): Promise<BookDocument> => {
     { new: true }
   )
   if (!foundBook) {
-    throw new NotFoundError('Book not found book service')
+    throw new NotFoundError('Book not found')
   }
   return foundBook
 }
 
-// This is a temporary operation to fill the DB with personally created books for testing
+const removeBook = async (bookId: string): Promise<BookDocument> => {
+  const success = await Book.findByIdAndRemove(bookId)
+  if (!success) throw new NotFoundError('Book not found')
+  return success
+}
+
 const addBook = async (book: BookDocument): Promise<BookDocument> => {
   return book.save()
 }
@@ -116,5 +121,6 @@ export default {
   getByStatus,
   lendBook,
   returnBook,
+  removeBook,
   addBook,
 }

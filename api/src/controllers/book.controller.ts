@@ -152,6 +152,24 @@ export const returnBook = async (
   }
 }
 
+export const removeBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const result = await bookServices.removeBook(req.params.bookId)
+    if (result) res.send('book removed from DB')
+    else throw new BadRequestError('Invalid Request', 400)
+  } catch (error) {
+    if (error instanceof Error && error.name == 'ValidationError') {
+      next(new BadRequestError('Invalid Request', 400, error))
+    } else {
+      next(error)
+    }
+  }
+}
+
 export const addBook = async (
   req: Request,
   res: Response,

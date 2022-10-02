@@ -1,62 +1,85 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import { Paper, IconButton, TextField } from "@mui/material";
+import {
+  Paper,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { addBook } from "redux/books";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "redux/store";
+import { alignProperty } from "@mui/material/styles/cssUtils";
 
-const AddForm = () => {
+const UpdateAuthor = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const [book, setBook] = React.useState({
-    title: "",
-    isbn: "",
-    description: "",
-    publisher: "",
+  const [task, setTask] = React.useState("");
+
+  const handleFormChange = (event: SelectChangeEvent) => {
+    setTask(event.target.value);
+  };
+  const [author, setAuthor] = React.useState({
     authors: [], //array string
-    categories: [], //array string
-    status: "available",
-    borrower: null,
-    publishDate: {
-      type: Date,
-      required: true,
-    },
-    borrowDate: null,
-    returnDate: null,
   });
 
   const handleChange = (event: any) => {
     let { name, value } = event.target;
-    if (name === "publishDate") {
-      value = new Date(Date.parse(value));
-    } else if (name === "categories" || name === "authors") {
+    if (name === "authors") {
       value = value.split(", ");
     }
-    setBook((prevState) => ({ ...prevState, [name]: value }));
+    setAuthor((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const addClick = () => {
-    console.log(JSON.stringify(book));
-
-    dispatch(
-      addBook({
-        searchBy: "addBook",
-        url: `http://localhost:4000/api/v1/books/addbook`,
-        bookToAdd: book,
-      })
-    );
+    // console.log(JSON.stringify(author));
+    // dispatch(
+    //   addBook({
+    //     searchBy: "addBook",
+    //     url: `http://localhost:4000/api/v1/books/addbook`,
+    //     bookToAdd: author,
+    //   })
+    // );
   };
 
   return (
     <Paper>
       <Box
         sx={{
-          width: "100%",
+          width: "90%",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
+        <FormControl sx={{ width: "50%" }}>
+          <InputLabel id="demo-simple-select-label">
+            Update, Add or Remove Author?
+          </InputLabel>
+          <Select
+            labelId="select-task"
+            id="select-task"
+            value={task}
+            label="Update, Add or Remove Author?"
+            onChange={handleFormChange}
+          >
+            <MenuItem value={"update"}>Update</MenuItem>
+            <MenuItem value={"add"}>Add</MenuItem>
+            <MenuItem value={"remove"}>Remove</MenuItem>
+          </Select>
+        </FormControl>
+        {
+          task === "update" ? (
+            <h3>Updating</h3>
+          ) : task === "add" ? (
+            <h3>Adding</h3>
+          ) : task === "remove" ? (
+            <h3>Removing</h3>
+          ) : (
+            ""
+          ) /* 
         <TextField
           sx={{
             width: "60%",
@@ -171,10 +194,11 @@ const AddForm = () => {
           aria-label="search"
         >
           Upload Book
-        </IconButton>
+        </IconButton> */
+        }
       </Box>
     </Paper>
   );
 };
 
-export default AddForm;
+export default UpdateAuthor;

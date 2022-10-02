@@ -3,6 +3,7 @@ import Table from "components/Table";
 import Admin from "./Admin";
 import Login from "./LoginPage";
 import PrivateRoute from "components/PrivateRoute";
+import UpdateAuthor from "components/UpdateAuthor";
 
 const Home = () => {
   return (
@@ -26,6 +27,14 @@ const Home = () => {
           }
         />
 
+        <Route
+          path="/update"
+          element={
+            <PrivateRoute prop={"admin"}>
+              <UpdateAuthor />
+            </PrivateRoute>
+          }
+        />
         <Route path="/login" element={<Login />} />
       </Routes>
     </>

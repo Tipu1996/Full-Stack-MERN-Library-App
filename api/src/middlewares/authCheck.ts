@@ -12,7 +12,7 @@ const authCheck = (req: Request, res: Response, next: NextFunction) => {
       const token = authorizationHeader.split(' ')[1]
 
       const decodedUser = jwt.verify(token, JWT_SECRET)
-      console.log('decodedUser: ', decodedUser)
+      // console.log('decodedUser: ', decodedUser)
 
       req.user = decodedUser
       return next()

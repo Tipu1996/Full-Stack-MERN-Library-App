@@ -45,6 +45,7 @@ const Header = () => {
   const logout = () => {
     localStorage.clear();
     navigate("/login");
+    window.location.reload();
   };
 
   const handleCloseUserMenu = (prop: boolean) => {

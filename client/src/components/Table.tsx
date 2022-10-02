@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { getBooks } from "redux/books";
+import { useEffect, useState } from "react";
+import { getBooks, removeBook } from "redux/books";
 import { Book } from "types";
 import { AppDispatch, RootState } from "redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,13 +11,19 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SearchFilter from "./SearchFilter";
-import { Box } from "@mui/material";
-// import { Navigate, useLocation } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import mongoose from "mongoose";
+import { Link } from "react-router-dom";
 
 const TableDisplay = () => {
-  // const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const state = useSelector((state: RootState) => state);
+  const [admin, setAdmin] = useState<boolean | null>(false);
+  const isAdmin = localStorage.getItem("isAdmin");
+  useEffect(() => {
+    if (isAdmin === "true") setAdmin(true);
+    else if (isAdmin === "false") setAdmin(false);
+  }, [isAdmin]);
   let allBooks: Book[] = state.books.list;
   useEffect(() => {
     const token = localStorage.getItem("jwtToken") || null;
@@ -32,6 +38,22 @@ const TableDisplay = () => {
       );
   }, [dispatch, state.users.jwtToken]);
 
+  function remove(prop: mongoose.Schema.Types.ObjectId) {
+    dispatch(
+      removeBook({
+        searchBy: "removeBook",
+        url: "http://localhost:4000/api/v1/books/",
+        bookId: prop,
+      })
+    );
+    window.location.reload();
+  }
+
+  // useEffect(() => {
+  //   window.location.reload();
+  // }, [state.books.list]);
+
+  // console.log(state.books.list);
   function filterSearch() {
     allBooks = state.books.list;
   }
@@ -66,6 +88,14 @@ const TableDisplay = () => {
                   <TableCell>Authors</TableCell>
                   <TableCell>Categories</TableCell>
                   <TableCell>Status</TableCell>
+                  {admin ? (
+                    <>
+                      <TableCell align={"left"}>REMOVE</TableCell>
+                      <TableCell align={"left"}>Update</TableCell>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -80,6 +110,30 @@ const TableDisplay = () => {
                       {book.categories.join(", ")}
                     </TableCell>
                     <TableCell align={"left"}>{book.status}</TableCell>
+                    {admin ? (
+                      <>
+                        <TableCell
+                          align={"left"}
+                          onClick={() => remove(book._id)}
+                        >
+                          <Button variant="outlined" size="small">
+                            Remove
+                          </Button>
+                        </TableCell>
+                        <TableCell align={"left"}>
+                          <Link
+                            to="/update"
+                            style={{ textDecoration: "none", color: "white" }}
+                          >
+                            <Button variant="outlined" size="small">
+                              Update
+                            </Button>
+                          </Link>
+                        </TableCell>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
