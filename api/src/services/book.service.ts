@@ -1,5 +1,7 @@
 import Book, { BookDocument } from '../models/Book'
 import { NotFoundError } from '../helpers/apiError'
+import { ObjectId } from 'mongodb'
+import mongoose from 'mongoose'
 
 const getAll = async (): Promise<BookDocument[]> => {
   return Book.find().sort({ title: 1 }).populate('borrower')
@@ -112,6 +114,26 @@ const addBook = async (book: BookDocument): Promise<BookDocument> => {
   return book.save()
 }
 
+const addAuthor = async (
+  bookId: string,
+  authors: string
+): Promise<BookDocument> => {
+  const authorlist = authors.split('_')
+  const updatedBook = await Book.findOneAndUpdate(
+    { _id: bookId },
+    {
+      $push: {
+        authors: authorlist,
+      },
+    },
+    { new: true }
+  )
+  if (!updatedBook) {
+    throw new NotFoundError('Book not found')
+  }
+  return updatedBook
+}
+
 export default {
   getAll,
   getByTitle,
@@ -123,4 +145,5 @@ export default {
   returnBook,
   removeBook,
   addBook,
+  addAuthor,
 }

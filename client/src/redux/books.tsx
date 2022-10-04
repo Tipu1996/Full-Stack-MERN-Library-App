@@ -46,14 +46,9 @@ export const getBooks = createAsyncThunk(
 
 export const addBook = createAsyncThunk(
   "books/addBook",
-  async ({ searchBy, url, bookId, bookToAdd }: asyncObject) => {
+  async ({ searchBy, url, bookToAdd }: asyncObject) => {
     if (searchBy === "addBook") {
       return axios.post(url, bookToAdd).then((response) => response.data);
-    } else if (searchBy === "removeBook") {
-      console.log(`${url}removebook/${bookId}`);
-      return axios
-        .post(`url/removebook/${bookId}`, {})
-        .then((response) => response.data);
     }
   }
 );
@@ -66,6 +61,25 @@ export const removeBook = createAsyncThunk(
         .post(`${url}/removebook/${bookId}`, {})
         .then((response) => response.data);
     }
+  }
+);
+
+export const addAuthor = createAsyncThunk(
+  "books/addAuthor",
+  async ({
+    url,
+    bookId,
+    authors,
+  }: {
+    url: string;
+    bookId: string;
+    authors: string;
+  }) => {
+    const connectedAuthors = authors.replace(", ", "_");
+    console.log(`${bookId}`);
+    return axios
+      .post(`${url}/${bookId}/${connectedAuthors}`, {})
+      .then((response) => response.data);
   }
 );
 
@@ -107,6 +121,22 @@ const slice = createSlice({
       state.status = "success";
     });
     builder.addCase(removeBook.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(addAuthor.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(addAuthor.fulfilled, (state, action) => {
+      const index = state.list.findIndex(
+        (object) => object._id === action.payload._id
+      );
+      if (index !== -1) {
+        state.list.splice(index, 1, action.payload);
+      }
+      state.status = "success";
+    });
+    builder.addCase(addAuthor.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });

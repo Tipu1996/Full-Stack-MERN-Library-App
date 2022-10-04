@@ -3,6 +3,7 @@ import bookServices from '../services/book.service'
 import userServices from '../services/user.service'
 import { BadRequestError } from '../helpers/apiError'
 import Book from '../models/Book'
+import mongoose from 'mongoose'
 
 export const getAll = async (
   req: Request,
@@ -206,6 +207,24 @@ export const addBook = async (
 
     await bookServices.addBook(book)
     res.json(book)
+  } catch (error) {
+    if (error instanceof Error && error.name == 'ValidationError') {
+      next(new BadRequestError('Invalid Request', 400, error))
+    } else {
+      next(error)
+    }
+  }
+}
+
+export const addAuthor = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const bookId = req.params.bookId
+    const authors = req.params.authors
+    res.json(await bookServices.addAuthor(bookId, authors))
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', 400, error))

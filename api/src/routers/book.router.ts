@@ -12,6 +12,7 @@ import {
   lendBook,
   returnBook,
   removeBook,
+  addAuthor,
 } from '../controllers/book.controller'
 
 const router = express.Router()
@@ -26,5 +27,6 @@ router.get('/lend/:bookId/users/:userId', lendBook)
 router.get('/return/:bookId/users/:userId', returnBook)
 router.post('/removebook/:bookId', removeBook)
 router.post('/addbook', addBook)
+router.post('/add_author/:bookId/:authors', addAuthor)
 
 export default router

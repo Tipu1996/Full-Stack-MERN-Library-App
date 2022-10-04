@@ -12,7 +12,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SearchFilter from "./SearchFilter";
 import { Box, Button } from "@mui/material";
-import mongoose from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 import { Link } from "react-router-dom";
 
 const TableDisplay = () => {
@@ -49,11 +49,10 @@ const TableDisplay = () => {
     window.location.reload();
   }
 
-  // useEffect(() => {
-  //   window.location.reload();
-  // }, [state.books.list]);
+  function update(prop: ObjectId) {
+    localStorage.setItem("bookId", prop.toString());
+  }
 
-  // console.log(state.books.list);
   function filterSearch() {
     allBooks = state.books.list;
   }
@@ -121,14 +120,20 @@ const TableDisplay = () => {
                           </Button>
                         </TableCell>
                         <TableCell align={"left"}>
-                          <Link
-                            to="/update"
-                            style={{ textDecoration: "none", color: "white" }}
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => update(book._id)}
                           >
-                            <Button variant="outlined" size="small">
+                            <Link
+                              to={{
+                                pathname: "/update",
+                              }}
+                              style={{ textDecoration: "none", color: "white" }}
+                            >
                               Update
-                            </Button>
-                          </Link>
+                            </Link>
+                          </Button>
                         </TableCell>
                       </>
                     ) : (

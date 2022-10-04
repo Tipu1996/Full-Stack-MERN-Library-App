@@ -7,40 +7,52 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  TextField,
+  Button,
 } from "@mui/material";
-import { addBook } from "redux/books";
+// import { addAuthor } from "redux/books";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "redux/store";
-import { alignProperty } from "@mui/material/styles/cssUtils";
+import { addAuthor } from "redux/books";
 
 const UpdateAuthor = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [task, setTask] = React.useState("");
+  const [authors, setAuthor] = React.useState<string>("");
 
   const handleFormChange = (event: SelectChangeEvent) => {
     setTask(event.target.value);
   };
-  const [author, setAuthor] = React.useState({
-    authors: [], //array string
-  });
 
   const handleChange = (event: any) => {
-    let { name, value } = event.target;
-    if (name === "authors") {
-      value = value.split(", ");
-    }
-    setAuthor((prevState) => ({ ...prevState, [name]: value }));
+    let { value } = event.target;
+    setAuthor(value);
   };
 
   const addClick = () => {
-    // console.log(JSON.stringify(author));
-    // dispatch(
-    //   addBook({
-    //     searchBy: "addBook",
-    //     url: `http://localhost:4000/api/v1/books/addbook`,
-    //     bookToAdd: author,
-    //   })
-    // );
+    console.log(authors);
+    const bookId = localStorage.getItem("bookId");
+    if (task === "add") {
+      dispatch(
+        addAuthor({
+          url: "http://localhost:4000/api/v1/books/add_author",
+          authors,
+          bookId: bookId ? bookId : "",
+        })
+      );
+      //   setTimeout(() => {
+      //     localStorage.removeItem("bookId");
+      //   }, 2000);
+    }
+    // else {
+    //   dispatch(
+    //     addBook({
+    //       url: `http://localhost:4000/api/v1/books/updateBook`,
+    //       //   bookId: bookId ? bookId : "",
+    //     })
+    //   );
+    //   localStorage.removeItem("bookId");
+    // }
   };
 
   return (
@@ -49,14 +61,14 @@ const UpdateAuthor = () => {
         sx={{
           width: "90%",
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <FormControl sx={{ width: "50%" }}>
+        <FormControl sx={{ width: "30%" }}>
           <InputLabel id="demo-simple-select-label">
-            Update, Add or Remove Author?
+            Add or Remove Author?
           </InputLabel>
           <Select
             labelId="select-task"
@@ -65,16 +77,41 @@ const UpdateAuthor = () => {
             label="Update, Add or Remove Author?"
             onChange={handleFormChange}
           >
-            <MenuItem value={"update"}>Update</MenuItem>
             <MenuItem value={"add"}>Add</MenuItem>
             <MenuItem value={"remove"}>Remove</MenuItem>
           </Select>
         </FormControl>
         {
-          task === "update" ? (
-            <h3>Updating</h3>
-          ) : task === "add" ? (
-            <h3>Adding</h3>
+          task === "add" ? (
+            <>
+              <h3>Adding</h3>
+              <TextField
+                sx={{
+                  width: "60%",
+                  display: "flex",
+                }}
+                placeholder="Author to add"
+                name="title"
+                inputProps={{ "aria-label": "add author" }}
+                onChange={(event) => {
+                  handleChange(event);
+                }}
+                onKeyPress={(event) => {
+                  event.key === "Enter" && event.preventDefault();
+                }}
+              />
+
+              <Button
+                onClick={(event) => {
+                  addClick();
+                }}
+                type="button"
+                sx={{ p: "7px" }}
+                aria-label="search"
+              >
+                Add Author
+              </Button>
+            </>
           ) : task === "remove" ? (
             <h3>Removing</h3>
           ) : (
@@ -95,96 +132,7 @@ const UpdateAuthor = () => {
             event.key === "Enter" && event.preventDefault();
           }}
         />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="ISBN"
-          name="isbn"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Description"
-          name="description"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Publisher"
-          name="publisher"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Authors"
-          name="authors"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Categories"
-          name="categories"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Publish Date: yyyy,mm,dd (no spaces)"
-          name="publishDate"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
+        
         <IconButton
           onClick={(event) => {
             addClick();
