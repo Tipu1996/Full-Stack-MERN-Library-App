@@ -49,8 +49,8 @@ const TableDisplay = () => {
     window.location.reload();
   }
 
-  function update(prop: ObjectId) {
-    localStorage.setItem("bookId", prop.toString());
+  function update(prop: ObjectId, book: Book) {
+    localStorage.setItem("book", JSON.stringify(book));
   }
 
   function filterSearch() {
@@ -123,12 +123,10 @@ const TableDisplay = () => {
                           <Button
                             variant="outlined"
                             size="small"
-                            onClick={() => update(book._id)}
+                            onClick={() => update(book._id, book)}
                           >
                             <Link
-                              to={{
-                                pathname: "/update",
-                              }}
+                              to="/update"
                               style={{ textDecoration: "none", color: "white" }}
                             >
                               Update

@@ -1,8 +1,6 @@
 import { Navigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
 import React from "react";
 import Forbidden from "./Forbidden";
-// import { RootState } from "redux/store";
 
 function PrivateRoute({
   children,
@@ -15,14 +13,13 @@ function PrivateRoute({
     let isAdmin = localStorage.getItem("isAdmin");
     if (isAdmin === "true") return children;
     else return <Forbidden />;
-  } else if (prop === "table") {
+  } else {
     let jwtToken = localStorage.getItem("jwtToken");
     if (jwtToken === null) {
       return <Navigate to="/login" />;
     }
     return children;
   }
-  return children;
 }
 
 export default PrivateRoute;

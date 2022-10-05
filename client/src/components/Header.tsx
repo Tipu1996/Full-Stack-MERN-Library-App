@@ -30,6 +30,12 @@ export const tokenExpiry = () => {
 const Header = () => {
   const navigate = useNavigate();
 
+  const tempPic = localStorage.getItem("picture");
+  const [pic, setPic] = React.useState("");
+  React.useEffect(() => {
+    if (tempPic) setPic(tempPic);
+  }, [tempPic]);
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -91,7 +97,7 @@ const Header = () => {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 {tokenExpiry() ? (
-                  <Avatar src={"/broken-image.jpg"} />
+                  <Avatar src={pic} />
                 ) : (
                   <Avatar src="/broken-image.jpg" />
                 )}
@@ -131,6 +137,24 @@ const Header = () => {
               ) : (
                 ""
               )}
+              <Link
+                to="/dashboard"
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <MenuItem
+                  key="dashBoard"
+                  onClick={() => {
+                    handleCloseUserMenu(false);
+                    navigate("/dashboard");
+                  }}
+                >
+                  {tokenExpiry() ? (
+                    <Typography textAlign="center">DashBoard</Typography>
+                  ) : (
+                    ""
+                  )}
+                </MenuItem>
+              </Link>
               <MenuItem
                 key="signingInOrOut"
                 onClick={() => handleCloseUserMenu(true)}

@@ -4,6 +4,7 @@ import Admin from "./Admin";
 import Login from "./LoginPage";
 import PrivateRoute from "components/PrivateRoute";
 import UpdateAuthor from "components/UpdateAuthor";
+import DashBoard from "components/Dashboard";
 
 const Home = () => {
   return (
@@ -23,6 +24,15 @@ const Home = () => {
           element={
             <PrivateRoute prop={"admin"}>
               <Admin />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute prop={"dashboard"}>
+              <DashBoard />
             </PrivateRoute>
           }
         />

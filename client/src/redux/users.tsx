@@ -4,6 +4,7 @@ import { User } from "types";
 
 export interface usersState {
   list: User[];
+  user: User | null;
   status: string;
   jwtToken: string | null;
   isAdmin: boolean;
@@ -12,6 +13,7 @@ export interface usersState {
 
 const initialState: usersState = {
   list: [],
+  user: null,
   status: "",
   jwtToken: null,
   isAdmin: false,
@@ -20,17 +22,24 @@ const initialState: usersState = {
 
 interface asyncObject {
   searchBy?: string;
-  body: object;
+  body?: object;
   url: string;
-  header: object;
+  header?: object;
+  jwtToken?: string | null;
 }
 
-// export const getUsers = createAsyncThunk(
-//   "users/getUsers",
-//   async ({ url }: asyncObject) => {
-//     return axios.get(url).then((response) => response.data);
-//   }
-// );
+export const getUsers = createAsyncThunk(
+  "users/getUsers",
+  async ({ url, jwtToken }: asyncObject) => {
+    return axios
+      .get(url, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      })
+      .then((response) => response.data);
+  }
+);
 
 export const loginUser = createAsyncThunk(
   "users/loginUser",
@@ -54,9 +63,21 @@ const slice = createSlice({
       localStorage.setItem("jwtToken", action.payload.token);
       localStorage.setItem("isAdmin", action.payload.isAdmin);
       localStorage.setItem("picture", action.payload.picture);
+      state.user = action.payload.user;
       state.status = "success";
     });
     builder.addCase(loginUser.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(getUsers.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getUsers.fulfilled, (state, action) => {
+      state.list = action.payload;
+      state.status = "success";
+    });
+    builder.addCase(getUsers.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });

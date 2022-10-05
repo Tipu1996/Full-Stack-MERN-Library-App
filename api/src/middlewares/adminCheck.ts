@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { ForbiddenError } from '../helpers/apiError'
 import { JWT_SECRET } from '../util/secrets'
 
-const authCheck = (req: Request, res: Response, next: NextFunction) => {
+const adminCheck = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authorizationHeader = req.headers.authorization
     if (authorizationHeader) {
@@ -12,12 +12,17 @@ const authCheck = (req: Request, res: Response, next: NextFunction) => {
 
       const decodedUser: any = jwt.verify(token, JWT_SECRET)
 
-      req.user = decodedUser
-      return next()
+      if (decodedUser.isAdmin === true) {
+        req.user = decodedUser
+        return next()
+      } else if (decodedUser.isAdmin === false) {
+        res.send('You are not an ADMIN')
+        throw new ForbiddenError()
+      }
     }
     throw new ForbiddenError()
   } catch (error) {
     throw new ForbiddenError()
   }
 }
-export default authCheck
+export default adminCheck

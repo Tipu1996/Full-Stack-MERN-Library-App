@@ -9,16 +9,20 @@ import {
   SelectChangeEvent,
   TextField,
   Button,
+  Typography,
 } from "@mui/material";
 // import { addAuthor } from "redux/books";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "redux/store";
-import { addAuthor } from "redux/books";
+import { addAuthor, removeAuthor } from "redux/books";
+import { useNavigate } from "react-router-dom";
 
 const UpdateAuthor = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [task, setTask] = React.useState("");
   const [authors, setAuthor] = React.useState<string>("");
+  const [tempBook] = React.useState(localStorage.getItem("book"));
 
   const handleFormChange = (event: SelectChangeEvent) => {
     setTask(event.target.value);
@@ -30,8 +34,12 @@ const UpdateAuthor = () => {
   };
 
   const addClick = () => {
-    console.log(authors);
-    const bookId = localStorage.getItem("bookId");
+    let bookId = "";
+    if (tempBook) {
+      const book = JSON.parse(tempBook);
+      bookId = book._id;
+    }
+
     if (task === "add") {
       dispatch(
         addAuthor({
@@ -40,19 +48,20 @@ const UpdateAuthor = () => {
           bookId: bookId ? bookId : "",
         })
       );
-      //   setTimeout(() => {
-      //     localStorage.removeItem("bookId");
-      //   }, 2000);
+      localStorage.removeItem("book");
+      navigate("/");
+    } else if (task === "remove") {
+      dispatch(
+        removeAuthor({
+          url: "http://localhost:4000/api/v1/books/remove_author",
+          authors,
+          bookId: bookId ? bookId : "",
+        })
+      );
+      localStorage.removeItem("book");
+
+      navigate("/");
     }
-    // else {
-    //   dispatch(
-    //     addBook({
-    //       url: `http://localhost:4000/api/v1/books/updateBook`,
-    //       //   bookId: bookId ? bookId : "",
-    //     })
-    //   );
-    //   localStorage.removeItem("bookId");
-    // }
   };
 
   return (
@@ -81,69 +90,82 @@ const UpdateAuthor = () => {
             <MenuItem value={"remove"}>Remove</MenuItem>
           </Select>
         </FormControl>
-        {
-          task === "add" ? (
-            <>
-              <h3>Adding</h3>
-              <TextField
-                sx={{
-                  width: "60%",
-                  display: "flex",
-                }}
-                placeholder="Author to add"
-                name="title"
-                inputProps={{ "aria-label": "add author" }}
-                onChange={(event) => {
-                  handleChange(event);
-                }}
-                onKeyPress={(event) => {
-                  event.key === "Enter" && event.preventDefault();
-                }}
-              />
+        {task === "add" ? (
+          <>
+            <TextField
+              sx={{
+                width: "60%",
+                display: "flex",
+              }}
+              placeholder="Author to add"
+              name="title"
+              inputProps={{ "aria-label": "add author" }}
+              onChange={(event) => {
+                handleChange(event);
+              }}
+              onKeyPress={(event) => {
+                event.key === "Enter" && event.preventDefault();
+              }}
+            />
 
-              <Button
-                onClick={(event) => {
-                  addClick();
-                }}
-                type="button"
-                sx={{ p: "7px" }}
-                aria-label="search"
-              >
-                Add Author
-              </Button>
-            </>
-          ) : task === "remove" ? (
-            <h3>Removing</h3>
-          ) : (
-            ""
-          ) /* 
-        <TextField
-          sx={{
-            width: "60%",
-            display: "flex",
-          }}
-          placeholder="Title"
-          name="title"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            handleChange(event);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-          }}
-        />
-        
-        <IconButton
-          onClick={(event) => {
-            addClick();
-          }}
-          type="button"
-          sx={{ p: "7px" }}
-          aria-label="search"
-        >
-          Upload Book
-        </IconButton> */
-        }
+            <Button
+              onClick={(event) => {
+                addClick();
+              }}
+              type="button"
+              sx={{ p: "7px" }}
+              aria-label="search"
+            >
+              Add Author
+            </Button>
+          </>
+        ) : task === "remove" ? (
+          <>
+            {tempBook
+              ? JSON.parse(tempBook).authors.map((author: string) => {
+                  return (
+                    <Box display={"flex"} mt={"20px"} mb={"20px"}>
+                      <Typography variant="body1" display="flex">
+                        {"Authors of the Book:  "}
+                        <React.Fragment>&nbsp;</React.Fragment>
+                      </Typography>
+                      <Typography variant="body1" display="flex">
+                        {author}
+                      </Typography>
+                    </Box>
+                  );
+                })
+              : ""}
+            <TextField
+              sx={{
+                width: "60%",
+                display: "flex",
+              }}
+              placeholder="Enter Author Names"
+              name="title"
+              inputProps={{ "aria-label": "remove authors" }}
+              onChange={(event) => {
+                handleChange(event);
+              }}
+              onKeyPress={(event) => {
+                event.key === "Enter" && event.preventDefault();
+              }}
+            />
+
+            <Button
+              onClick={(event) => {
+                addClick();
+              }}
+              type="button"
+              sx={{ p: "7px" }}
+              aria-label="search"
+            >
+              Remove
+            </Button>
+          </>
+        ) : (
+          ""
+        )}
       </Box>
     </Paper>
   );

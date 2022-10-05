@@ -76,6 +76,24 @@ export const addAuthor = createAsyncThunk(
     authors: string;
   }) => {
     const connectedAuthors = authors.replace(", ", "_");
+    return axios
+      .post(`${url}/${bookId}/${connectedAuthors}`, {})
+      .then((response) => response.data);
+  }
+);
+
+export const removeAuthor = createAsyncThunk(
+  "books/removeAuthor",
+  async ({
+    url,
+    bookId,
+    authors,
+  }: {
+    url: string;
+    bookId: string;
+    authors: string;
+  }) => {
+    const connectedAuthors = authors.replace(", ", "_");
     console.log(`${bookId}`);
     return axios
       .post(`${url}/${bookId}/${connectedAuthors}`, {})
@@ -137,6 +155,22 @@ const slice = createSlice({
       state.status = "success";
     });
     builder.addCase(addAuthor.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(removeAuthor.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(removeAuthor.fulfilled, (state, action) => {
+      const index = state.list.findIndex(
+        (object) => object._id === action.payload._id
+      );
+      if (index !== -1) {
+        state.list.splice(index, 1, action.payload);
+      }
+      state.status = "success";
+    });
+    builder.addCase(removeAuthor.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });
