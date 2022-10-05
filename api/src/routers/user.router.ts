@@ -2,9 +2,10 @@ import express from 'express'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
 
-import { getUsers } from '../controllers/user.controller'
+import { getUser, getUsers } from '../controllers/user.controller'
 import { JWT_SECRET } from '../util/secrets'
 import adminCheck from '../middlewares/adminCheck'
+import authCheck from '../middlewares/authCheck'
 
 const router = express.Router()
 
@@ -25,4 +26,5 @@ router.post(
   }
 )
 router.get('/', adminCheck, getUsers)
+router.get('/user/:userId', authCheck, getUser)
 export default router

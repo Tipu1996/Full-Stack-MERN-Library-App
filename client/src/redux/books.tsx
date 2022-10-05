@@ -82,6 +82,40 @@ export const addAuthor = createAsyncThunk(
   }
 );
 
+export const lendBook = createAsyncThunk(
+  "books/lendBook",
+  async ({
+    url,
+    bookId,
+    userId,
+  }: {
+    url: string;
+    bookId: mongoose.Schema.Types.ObjectId | null;
+    userId: mongoose.Schema.Types.ObjectId | null;
+  }) => {
+    return axios
+      .get(`${url}/${bookId}/user/${userId}`)
+      .then((response) => response.data);
+  }
+);
+
+export const returnBook = createAsyncThunk(
+  "books/returnBook",
+  async ({
+    url,
+    bookId,
+    userId,
+  }: {
+    url: string;
+    bookId: mongoose.Schema.Types.ObjectId | null;
+    userId: mongoose.Schema.Types.ObjectId | null;
+  }) => {
+    return axios
+      .get(`${url}/${bookId}/user/${userId}`)
+      .then((response) => response.data);
+  }
+);
+
 export const removeAuthor = createAsyncThunk(
   "books/removeAuthor",
   async ({
@@ -94,7 +128,7 @@ export const removeAuthor = createAsyncThunk(
     authors: string;
   }) => {
     const connectedAuthors = authors.replace(", ", "_");
-    console.log(`${bookId}`);
+    // console.log(`${bookId}`);
     return axios
       .post(`${url}/${bookId}/${connectedAuthors}`, {})
       .then((response) => response.data);
@@ -104,7 +138,12 @@ export const removeAuthor = createAsyncThunk(
 const slice = createSlice({
   name: "books",
   initialState,
-  reducers: {},
+  reducers: {
+    reduxInitialState: (state) => {
+      state.list = [];
+      state.status = "";
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getBooks.pending, (state) => {
       state.status = "loading";
@@ -174,7 +213,41 @@ const slice = createSlice({
       console.log("Something went wrong");
       state.status = "failed";
     });
+    builder.addCase(lendBook.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(lendBook.fulfilled, (state, action) => {
+      const index = state.list.findIndex(
+        (object) => object._id === action.payload[0]._id
+      );
+      if (index !== -1) {
+        state.list.splice(index, 1, action.payload[0]);
+      }
+      state.status = "success";
+    });
+    builder.addCase(lendBook.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(returnBook.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(returnBook.fulfilled, (state, action) => {
+      const index = state.list.findIndex(
+        (object) => object._id === action.payload[0]._id
+      );
+      if (index !== -1) {
+        state.list.splice(index, 1, action.payload[0]);
+      }
+      state.status = "success";
+    });
+    builder.addCase(returnBook.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
   },
 });
+
+export const { reduxInitialState } = slice.actions;
 
 export default slice.reducer;

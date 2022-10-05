@@ -14,6 +14,9 @@ import { Badge } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import { AppDispatch } from "redux/configureStore";
+import { useDispatch } from "react-redux";
+import { reduxInitialState } from "redux/books";
 
 export const tokenExpiry = () => {
   const token = localStorage.getItem("jwtToken");
@@ -29,9 +32,11 @@ export const tokenExpiry = () => {
 
 const Header = () => {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch<AppDispatch>();
   const tempPic = localStorage.getItem("picture");
+
   const [pic, setPic] = React.useState("");
+
   React.useEffect(() => {
     if (tempPic) setPic(tempPic);
   }, [tempPic]);
@@ -51,6 +56,7 @@ const Header = () => {
   const logout = () => {
     localStorage.clear();
     navigate("/login");
+    dispatch(reduxInitialState());
     window.location.reload();
   };
 

@@ -103,5 +103,5 @@ export type User = {
   lastName: string;
   email: string;
   isAdmin: boolean;
-  borrowedBooks: mongoose.Schema.Types.ObjectId[];
+  borrowedBooks: mongoose.Schema.Types.ObjectId[] | Book[];
 };

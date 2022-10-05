@@ -25,7 +25,23 @@ const DashBoard = () => {
   const [isAdmin] = useState(localStorage.getItem("isAdmin"));
   const [showUsers, setShowUsers] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+  let tempUser = localStorage.getItem("user");
+  const [user, setUser] = useState<User | null>(
+    tempUser ? JSON.parse(tempUser) : null
+  );
+
+  const tempPic = localStorage.getItem("picture");
+
+  const [pic, setPic] = useState("");
+
+  useEffect(() => {
+    if (tempPic) setPic(tempPic);
+  }, [tempPic]);
+
+  useEffect(() => {
+    setUser(tempUser ? JSON.parse(tempUser) : null);
+  }, [tempUser]);
+
   const getUsersClick = () => {
     const token = localStorage.getItem("jwtToken");
     setShowUsers(showUsers ? false : true);
@@ -37,11 +53,20 @@ const DashBoard = () => {
     );
   };
 
-  useEffect(() => setUser(state.users.user), [state.users.user]);
-
   useEffect(() => {
     setAllUsers(state.users.list);
   }, [showUsers, allUsers, state.users.list]);
+
+  // function returning(bookId: mongoose.Schema.Types.ObjectId) {
+  //   const user = localStorage.getItem("userId");
+  //   dispatch(
+  //     returnBook({
+  //       url: "http://localhost:4000/api/v1/books/return",
+  //       bookId,
+  //       userId: user ? JSON.parse(user) : "",
+  //     })
+  //   );
+  // }
 
   return (
     <>
@@ -55,7 +80,7 @@ const DashBoard = () => {
             aria-label="search"
             onClick={() => getUsersClick()}
           >
-            Get All Registered Users (Admin Right){" "}
+            Get All Registered Users (Admin Right)
             {!showUsers ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
           </Button>
         </Box>
@@ -75,9 +100,7 @@ const DashBoard = () => {
             <TableBody>
               {allUsers.map((user) => (
                 <TableRow key={user.email}>
-                  <TableCell align={"left"}>
-                    {user.firstName}" "{user.lastName}
-                  </TableCell>
+                  <TableCell align={"left"}>{user.firstName}</TableCell>
                   <TableCell align={"left"}>{user.email}</TableCell>
                   <TableCell align={"left"}>
                     {JSON.stringify(user.borrowedBooks)}
@@ -87,9 +110,7 @@ const DashBoard = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      ) : (
-        ""
-      )}
+      ) : null}
       <Box
         display={"flex"}
         justifyContent="center"
@@ -105,7 +126,7 @@ const DashBoard = () => {
         </Typography>
         <Avatar
           alt={user?.firstName}
-          src={state.users.picture}
+          src={pic}
           sx={{ ml: "5px", width: "60px", height: "60px" }}
         />
       </Box>
@@ -119,19 +140,23 @@ const DashBoard = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {user === null ? (
-              ""
-            ) : (
+            {user ? (
               <TableRow key={user.email}>
-                <TableCell align={"left"}>
-                  {user.firstName}" "{user.lastName}
-                </TableCell>
+                <TableCell align={"left"}>{user.firstName}</TableCell>
                 <TableCell align={"left"}>{user.email}</TableCell>
                 <TableCell align={"left"}>
-                  {JSON.stringify(user.borrowedBooks)}
+                  {
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      // onClick={() => returning(book._id)}
+                    >
+                      {JSON.stringify(user.borrowedBooks)}
+                    </Button>
+                  }
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
           </TableBody>
         </Table>
       </TableContainer>

@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "redux/configureStore";
-import { loginUser } from "redux/users";
+import { getUser, loginUser } from "redux/users";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,7 +30,14 @@ const Login = () => {
           },
         },
       })
-    ).then(() => {
+    ).then((res) => {
+      dispatch(
+        getUser({
+          jwtToken: res.payload.token,
+          userId: res.payload.id,
+          url: `http://localhost:4000/api/v1/users`,
+        })
+      );
       localStorage.setItem("signedIn", "true");
       setLoggedIn(localStorage.getItem("signedIn"));
       navigate("/");

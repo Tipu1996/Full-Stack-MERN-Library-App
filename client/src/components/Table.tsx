@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBooks, removeBook } from "redux/books";
+import { getBooks, lendBook, removeBook, returnBook } from "redux/books";
 import { Book } from "types";
 import { AppDispatch, RootState } from "redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +19,13 @@ const TableDisplay = () => {
   const dispatch = useDispatch<AppDispatch>();
   const state = useSelector((state: RootState) => state);
   const [admin, setAdmin] = useState<boolean | null>(false);
+
   const isAdmin = localStorage.getItem("isAdmin");
+
+  useEffect(() => {
+    const tempUser = state.users.user?._id;
+    if (tempUser) localStorage.setItem("userId", JSON.stringify(tempUser));
+  });
   useEffect(() => {
     if (isAdmin === "true") setAdmin(true);
     else if (isAdmin === "false") setAdmin(false);
@@ -51,6 +57,28 @@ const TableDisplay = () => {
 
   function update(prop: ObjectId, book: Book) {
     localStorage.setItem("book", JSON.stringify(book));
+  }
+
+  function lend(bookId: mongoose.Schema.Types.ObjectId) {
+    const user = localStorage.getItem("userId");
+    dispatch(
+      lendBook({
+        url: "http://localhost:4000/api/v1/books/lend",
+        bookId,
+        userId: user ? JSON.parse(user) : "",
+      })
+    );
+  }
+
+  function returning(bookId: mongoose.Schema.Types.ObjectId) {
+    const user = localStorage.getItem("userId");
+    dispatch(
+      returnBook({
+        url: "http://localhost:4000/api/v1/books/return",
+        bookId,
+        userId: user ? JSON.parse(user) : "",
+      })
+    );
   }
 
   function filterSearch() {
@@ -108,7 +136,31 @@ const TableDisplay = () => {
                     <TableCell align={"left"}>
                       {book.categories.join(", ")}
                     </TableCell>
-                    <TableCell align={"left"}>{book.status}</TableCell>
+                    {book.status === "available" ? (
+                      <>
+                        <TableCell align={"left"}>
+                          {book.status}
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            onClick={() => lend(book._id)}
+                          >
+                            Lend Book
+                          </Button>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <TableCell align={"left"}>
+                        {book.status}
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => returning(book._id)}
+                        >
+                          Return Book
+                        </Button>
+                      </TableCell>
+                    )}
                     {admin ? (
                       <>
                         <TableCell

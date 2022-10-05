@@ -1,5 +1,6 @@
 import User, { UserDocument } from '../models/User'
 import { NotFoundError } from '../helpers/apiError'
+import mongoose from 'mongoose'
 
 const addUser = async (user: UserDocument): Promise<UserDocument> => {
   return user.save()
@@ -41,4 +42,8 @@ const returnBook = async (
   return foundUser
 }
 
-export default { addUser, getUsers, lendBook, returnBook }
+const getUser = async (userId: string): Promise<any> => {
+  return User.findOne({ _id: userId }).populate('borrowedBooks')
+}
+
+export default { addUser, getUsers, lendBook, returnBook, getUser }

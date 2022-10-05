@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import mongoose from "mongoose";
 import { User } from "types";
 
 export interface usersState {
@@ -41,6 +42,27 @@ export const getUsers = createAsyncThunk(
   }
 );
 
+export const getUser = createAsyncThunk(
+  "users/getUser",
+  async ({
+    url,
+    jwtToken,
+    userId,
+  }: {
+    url: string;
+    userId: mongoose.Schema.Types.ObjectId;
+    jwtToken: string;
+  }) => {
+    return axios
+      .get(`${url}/user/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      })
+      .then((response) => response.data);
+  }
+);
+
 export const loginUser = createAsyncThunk(
   "users/loginUser",
   async ({ url, header, body }: asyncObject) => {
@@ -63,7 +85,6 @@ const slice = createSlice({
       localStorage.setItem("jwtToken", action.payload.token);
       localStorage.setItem("isAdmin", action.payload.isAdmin);
       localStorage.setItem("picture", action.payload.picture);
-      state.user = action.payload.user;
       state.status = "success";
     });
     builder.addCase(loginUser.rejected, (state) => {
@@ -78,6 +99,18 @@ const slice = createSlice({
       state.status = "success";
     });
     builder.addCase(getUsers.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(getUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getUser.fulfilled, (state, action) => {
+      state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      state.status = "success";
+    });
+    builder.addCase(getUser.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });
