@@ -14,10 +14,11 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "redux/configureStore";
 import { AppDispatch } from "redux/store";
-import { getUsers } from "redux/users";
-import { User } from "types";
+import { getUser, getUsers } from "redux/users";
+import { Book, User } from "types";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import { getBooks } from "redux/books";
 
 const DashBoard = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -25,10 +26,31 @@ const DashBoard = () => {
   const [isAdmin] = useState(localStorage.getItem("isAdmin"));
   const [showUsers, setShowUsers] = useState(false);
   const [allUsers, setAllUsers] = useState<User[]>([]);
-  let tempUser = localStorage.getItem("user");
-  const [user, setUser] = useState<User | null>(
-    tempUser ? JSON.parse(tempUser) : null
-  );
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken") || null;
+    const userId = localStorage.getItem("userId") || null;
+    if (token)
+      dispatch(
+        getBooks({
+          jwtToken: token,
+          searchBy: "getAll",
+          url: "http://localhost:4000/api/v1/books/",
+          bookToAdd: null,
+        })
+      );
+    if (userId && token)
+      dispatch(
+        getUser({
+          jwtToken: token,
+          userId: JSON.parse(userId),
+          url: `http://localhost:4000/api/v1/users`,
+        })
+      );
+  }, [dispatch, state.users.jwtToken]);
+
+  const user: User | null = state.users.user;
+  const allBooks: Book[] = state.books.list;
 
   const tempPic = localStorage.getItem("picture");
 
@@ -37,10 +59,6 @@ const DashBoard = () => {
   useEffect(() => {
     if (tempPic) setPic(tempPic);
   }, [tempPic]);
-
-  useEffect(() => {
-    setUser(tempUser ? JSON.parse(tempUser) : null);
-  }, [tempUser]);
 
   const getUsersClick = () => {
     const token = localStorage.getItem("jwtToken");
@@ -84,9 +102,7 @@ const DashBoard = () => {
             {!showUsers ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
           </Button>
         </Box>
-      ) : (
-        ""
-      )}
+      ) : null}
       {showUsers ? (
         <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
           <Table stickyHeader aria-label="sticky table">
@@ -117,6 +133,11 @@ const DashBoard = () => {
         alignItems={"center"}
         m={"20px 0 10px 0"}
       >
+        <Avatar
+          alt={user?.firstName}
+          src={pic}
+          sx={{ mr: "10px", width: "60px", height: "60px" }}
+        />
         <Typography
           align="center"
           variant="h5"
@@ -124,42 +145,29 @@ const DashBoard = () => {
         >
           Personal Profile
         </Typography>
-        <Avatar
-          alt={user?.firstName}
-          src={pic}
-          sx={{ ml: "5px", width: "60px", height: "60px" }}
-        />
       </Box>
-      <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
-        <Table stickyHeader aria-label="sticky table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Borrowed Books</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {user ? (
-              <TableRow key={user.email}>
-                <TableCell align={"left"}>{user.firstName}</TableCell>
-                <TableCell align={"left"}>{user.email}</TableCell>
-                <TableCell align={"left"}>
-                  {
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      // onClick={() => returning(book._id)}
-                    >
-                      {JSON.stringify(user.borrowedBooks)}
-                    </Button>
-                  }
-                </TableCell>
-              </TableRow>
-            ) : null}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {user ? (
+        <>
+          <Box
+            justifyContent="left"
+            alignItems={"center"}
+            m={"20px 0 10px 20px  "}
+          >
+            <Typography align="center" variant="body1">
+              Name:{"\u00A0"}
+              {user.firstName}
+              {user.lastName}
+            </Typography>
+            <Typography align="center" variant="body1">
+              Email:{"\u00A0"}
+              {user.email}
+            </Typography>
+          </Box>
+          {allBooks.map((book) =>
+            user?._id === book.borrower ? <text>found 1</text> : null
+          )}
+        </>
+      ) : null}
     </>
   );
 };

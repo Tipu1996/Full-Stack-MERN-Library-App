@@ -39,6 +39,7 @@ const Login = () => {
         })
       );
       localStorage.setItem("signedIn", "true");
+      localStorage.setItem("userId", JSON.stringify(res.payload.id));
       setLoggedIn(localStorage.getItem("signedIn"));
       navigate("/");
     });

@@ -22,10 +22,10 @@ const TableDisplay = () => {
 
   const isAdmin = localStorage.getItem("isAdmin");
 
-  useEffect(() => {
-    const tempUser = state.users.user?._id;
-    if (tempUser) localStorage.setItem("userId", JSON.stringify(tempUser));
-  });
+  // useEffect(() => {
+  //   const tempUser = state.users.user?._id;
+  //   if (tempUser) localStorage.setItem("userId", JSON.stringify(tempUser));
+  // });
   useEffect(() => {
     if (isAdmin === "true") setAdmin(true);
     else if (isAdmin === "false") setAdmin(false);
