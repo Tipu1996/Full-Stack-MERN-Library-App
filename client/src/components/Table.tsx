@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBooks, lendBook, removeBook, returnBook } from "redux/books";
+import { getBooks, lendBook, removeBook } from "redux/books";
 import { Book } from "types";
 import { AppDispatch, RootState } from "redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,6 +14,7 @@ import SearchFilter from "./SearchFilter";
 import { Box, Button } from "@mui/material";
 import mongoose, { ObjectId } from "mongoose";
 import { Link } from "react-router-dom";
+import { getUser } from "redux/users";
 
 const TableDisplay = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -22,17 +23,14 @@ const TableDisplay = () => {
 
   const isAdmin = localStorage.getItem("isAdmin");
 
-  // useEffect(() => {
-  //   const tempUser = state.users.user?._id;
-  //   if (tempUser) localStorage.setItem("userId", JSON.stringify(tempUser));
-  // });
   useEffect(() => {
     if (isAdmin === "true") setAdmin(true);
     else if (isAdmin === "false") setAdmin(false);
   }, [isAdmin]);
-  let allBooks: Book[] = state.books.list;
+
   useEffect(() => {
     const token = localStorage.getItem("jwtToken") || null;
+    const userId = localStorage.getItem("userId") || null;
     if (token)
       dispatch(
         getBooks({
@@ -42,7 +40,20 @@ const TableDisplay = () => {
           bookToAdd: null,
         })
       );
+    if (userId && token)
+      dispatch(
+        getUser({
+          jwtToken: token,
+          userId: JSON.parse(userId),
+          url: `http://localhost:4000/api/v1/users`,
+        })
+      );
   }, [dispatch, state.users.jwtToken]);
+
+  const user = state.users.user;
+  let books = state.books.list;
+
+  // user: "6339d7f6d860fa5b5186f848"    books: "6339d7f6d860fa5b5186f848"
 
   function remove(prop: mongoose.Schema.Types.ObjectId) {
     dispatch(
@@ -70,19 +81,8 @@ const TableDisplay = () => {
     );
   }
 
-  function returning(bookId: mongoose.Schema.Types.ObjectId) {
-    const user = localStorage.getItem("userId");
-    dispatch(
-      returnBook({
-        url: "http://localhost:4000/api/v1/books/return",
-        bookId,
-        userId: user ? JSON.parse(user) : "",
-      })
-    );
-  }
-
   function filterSearch() {
-    allBooks = state.books.list;
+    books = state.books.list;
   }
 
   return (
@@ -126,7 +126,7 @@ const TableDisplay = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {allBooks.map((book) => (
+                {books.map((book) => (
                   <TableRow key={book.title}>
                     <TableCell align={"left"}>{book.title}</TableCell>
                     <TableCell align={"left"}>{book.isbn}</TableCell>
@@ -149,17 +149,11 @@ const TableDisplay = () => {
                           </Button>
                         </TableCell>
                       </>
+                    ) : JSON.stringify(book.borrower?._id) ===
+                      JSON.stringify(user?._id) ? (
+                      <TableCell align={"left"}>Borrowed by you</TableCell>
                     ) : (
-                      <TableCell align={"left"}>
-                        {book.status}
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => returning(book._id)}
-                        >
-                          Return Book
-                        </Button>
-                      </TableCell>
+                      <TableCell align={"left"}>Unavailable</TableCell>
                     )}
                     {admin ? (
                       <>

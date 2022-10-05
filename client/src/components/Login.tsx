@@ -42,6 +42,7 @@ const Login = () => {
       localStorage.setItem("userId", JSON.stringify(res.payload.id));
       setLoggedIn(localStorage.getItem("signedIn"));
       navigate("/");
+      window.location.reload();
     });
   };
   useEffect(() => {

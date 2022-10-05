@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  Grid,
   Table,
   TableBody,
   TableCell,
@@ -15,10 +16,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "redux/configureStore";
 import { AppDispatch } from "redux/store";
 import { getUser, getUsers } from "redux/users";
-import { Book, User } from "types";
+import { User } from "types";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import { getBooks } from "redux/books";
+import { getBooks, returnBook } from "redux/books";
+import mongoose from "mongoose";
 
 const DashBoard = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,8 +51,8 @@ const DashBoard = () => {
       );
   }, [dispatch, state.users.jwtToken]);
 
-  const user: User | null = state.users.user;
-  const allBooks: Book[] = state.books.list;
+  const user = state.users.user;
+  const allBooks = state.books.list;
 
   const tempPic = localStorage.getItem("picture");
 
@@ -75,16 +77,16 @@ const DashBoard = () => {
     setAllUsers(state.users.list);
   }, [showUsers, allUsers, state.users.list]);
 
-  // function returning(bookId: mongoose.Schema.Types.ObjectId) {
-  //   const user = localStorage.getItem("userId");
-  //   dispatch(
-  //     returnBook({
-  //       url: "http://localhost:4000/api/v1/books/return",
-  //       bookId,
-  //       userId: user ? JSON.parse(user) : "",
-  //     })
-  //   );
-  // }
+  function returning(bookId: mongoose.Schema.Types.ObjectId) {
+    const user = localStorage.getItem("userId");
+    dispatch(
+      returnBook({
+        url: "http://localhost:4000/api/v1/books/return",
+        bookId,
+        userId: user ? JSON.parse(user) : "",
+      })
+    );
+  }
 
   return (
     <>
@@ -164,7 +166,25 @@ const DashBoard = () => {
             </Typography>
           </Box>
           {allBooks.map((book) =>
-            user?._id === book.borrower ? <text>found 1</text> : null
+            user._id === book?.borrower?._id ? (
+              <Grid key={book.isbn}>
+                <Typography align="center" variant="body1">
+                  Title:{"\u00A0"}
+                  {book.title}
+                </Typography>
+                <Typography align="center" variant="body1">
+                  Borrow Date:{"\u00A0"}
+                  {JSON.stringify(book.borrowDate)}{" "}
+                </Typography>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => returning(book._id)}
+                >
+                  Return Book
+                </Button>
+              </Grid>
+            ) : null
           )}
         </>
       ) : null}

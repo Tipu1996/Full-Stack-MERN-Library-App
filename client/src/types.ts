@@ -14,7 +14,7 @@ export type Book = {
   authors: string[];
   categories: string[];
   status: statusType;
-  borrower: mongoose.Schema.Types.ObjectId | null;
+  borrower: null | User;
   publishDate: Date;
   borrowDate: Date | null;
   returnDate: Date | null;
