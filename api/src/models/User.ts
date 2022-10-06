@@ -1,14 +1,5 @@
-import mongoose, { Model, Document } from 'mongoose'
-
-export type UserDocument = Document & {
-  _id?: mongoose.Schema.Types.ObjectId
-  firstName: string
-  lastName: string
-  email: string
-  picture: string
-  isAdmin: boolean
-  borrowedBooks: mongoose.Schema.Types.ObjectId[]
-}
+import mongoose from 'mongoose'
+import { UserDocument } from '../types'
 
 const userSchema = new mongoose.Schema<UserDocument>({
   firstName: {

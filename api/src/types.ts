@@ -19,6 +19,13 @@ export type BookDocument = Document & {
   returnDate: Date | null
 }
 
+export interface TokenObject {
+  userId: string
+  isAdmin: boolean
+  iat: number
+  exp: number
+}
+
 export interface ParsedToken {
   payload: {
     email: string
@@ -40,5 +47,6 @@ export type UserDocument = Document & {
   lastName: string
   email: string
   isAdmin: boolean
+  picture: string
   borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }

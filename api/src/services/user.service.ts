@@ -1,6 +1,6 @@
-import User, { UserDocument } from '../models/User'
+import User from '../models/User'
 import { NotFoundError } from '../helpers/apiError'
-import mongoose from 'mongoose'
+import { UserDocument } from '../types'
 
 const addUser = async (user: UserDocument): Promise<UserDocument> => {
   return user.save()

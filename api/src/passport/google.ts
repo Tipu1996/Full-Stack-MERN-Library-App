@@ -12,11 +12,8 @@ export default function () {
       done: VerifiedCallback
     ) => {
       try {
-        // console.log('parsedToken: ', parsedToken)
-        // console.log('googleId: ', googleId)
         let user = await User.findOne({ email: parsedToken.payload.email })
         if (!user) {
-          // console.log('creating new user')
           user = new User({
             email: parsedToken.payload.email,
             firstName: parsedToken.payload.given_name,
@@ -27,9 +24,8 @@ export default function () {
                 : false,
             picture: parsedToken.payload.picture,
           })
-          // console.log('user is saved:', user)
           user.save()
-          done(null, user, 'Registered User')
+          done(null, user, 'Registered New User')
         } else done(null, user, 'User Login Successful')
       } catch (error) {
         done(error)

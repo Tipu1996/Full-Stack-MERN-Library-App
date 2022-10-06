@@ -90,7 +90,7 @@ const Admin = () => {
           aria-label="search"
           onClick={() => getUsersClick()}
         >
-          Get All Registered Users (Admin Right)
+          Get All Registered Users
           {!showUsers ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
         </Button>
       </Box>

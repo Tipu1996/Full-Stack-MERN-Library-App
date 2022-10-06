@@ -1,11 +1,11 @@
 import express from 'express'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
-
 import { getUser, getUsers } from '../controllers/user.controller'
 import { JWT_SECRET } from '../util/secrets'
 import adminCheck from '../middlewares/adminCheck'
 import authCheck from '../middlewares/authCheck'
+import { UserDocument } from '../types'
 
 const router = express.Router()
 
@@ -13,8 +13,8 @@ router.post(
   '/login',
   passport.authenticate('google-id-token', { session: false }),
   (req, res) => {
-    const user: any = req.user
-    const info: any = req.authInfo
+    const user = req.user as UserDocument
+    const info = req.authInfo
     const picture = user.picture
     const id = user._id.toString()
     const isAdmin = user.isAdmin

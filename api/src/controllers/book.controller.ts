@@ -118,7 +118,7 @@ export const lendBook = async (
       if (user === null) res.send('This books has already borrowed by the user')
       else {
         const return_statement = [book, user]
-        // console.log(return_statement)
+
         res.send(return_statement)
       }
     }

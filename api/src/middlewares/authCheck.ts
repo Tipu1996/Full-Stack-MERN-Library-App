@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
+import { TokenObject } from '../types'
 
 import { ForbiddenError } from '../helpers/apiError'
 import { JWT_SECRET } from '../util/secrets'
@@ -10,7 +11,7 @@ const authCheck = (req: Request, res: Response, next: NextFunction) => {
     if (authorizationHeader) {
       const token = authorizationHeader.split(' ')[1]
 
-      const decodedUser: any = jwt.verify(token, JWT_SECRET)
+      const decodedUser = jwt.verify(token, JWT_SECRET) as TokenObject
 
       req.user = decodedUser
       return next()

@@ -68,13 +68,23 @@ const TableDisplay = () => {
 
   function lend(bookId: mongoose.Schema.Types.ObjectId) {
     const user = localStorage.getItem("userId");
+    const token = localStorage.getItem("jwtToken") || null;
     dispatch(
       lendBook({
         url: "http://localhost:4000/api/v1/books/lend",
         bookId,
         userId: user ? JSON.parse(user) : "",
       })
-    );
+    ).then(() => {
+      dispatch(
+        getBooks({
+          jwtToken: token,
+          searchBy: "getAll",
+          url: "http://localhost:4000/api/v1/books/",
+          bookToAdd: null,
+        })
+      );
+    });
   }
 
   function filterSearch() {

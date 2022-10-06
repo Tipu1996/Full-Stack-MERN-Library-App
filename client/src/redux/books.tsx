@@ -128,7 +128,6 @@ export const removeAuthor = createAsyncThunk(
     authors: string;
   }) => {
     const connectedAuthors = authors.replace(", ", "_");
-    // console.log(`${bookId}`);
     return axios
       .post(`${url}/${bookId}/${connectedAuthors}`, {})
       .then((response) => response.data);

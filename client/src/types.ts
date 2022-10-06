@@ -20,6 +20,13 @@ export type Book = {
   returnDate: Date | null;
 };
 
+export type TokenObject = {
+  userId: string;
+  isAdmin: boolean;
+  iat: number;
+  exp: number;
+};
+
 type Column = {
   id:
     | "title"

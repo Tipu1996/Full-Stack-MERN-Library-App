@@ -17,11 +17,12 @@ import jwt_decode from "jwt-decode";
 import { AppDispatch } from "redux/configureStore";
 import { useDispatch } from "react-redux";
 import { reduxInitialState } from "redux/books";
+import { TokenObject } from "types";
 
 export const tokenExpiry = () => {
   const token = localStorage.getItem("jwtToken");
   if (token) {
-    const decodedUser: any = jwt_decode(token);
+    const decodedUser: TokenObject = jwt_decode(token);
     if (decodedUser.exp * 1000 < Date.now()) {
       localStorage.clear();
       return false;
@@ -34,7 +35,6 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const tempPic = localStorage.getItem("picture");
-
   const [pic, setPic] = React.useState("");
 
   React.useEffect(() => {

@@ -137,7 +137,6 @@ const removeAuthor = async (
   authors: string
 ): Promise<BookDocument> => {
   const authorlist = authors.split('_')
-  console.log(authorlist)
   const updatedBook = await Book.findOneAndUpdate(
     { _id: bookId },
     {
