@@ -3,7 +3,6 @@ import { getBooks, lendBook, removeBook } from "redux/books";
 import { Book } from "types";
 import { AppDispatch, RootState } from "redux/configureStore";
 import { useDispatch, useSelector } from "react-redux";
-import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,7 +21,6 @@ const TableDisplay = () => {
   const [admin, setAdmin] = useState<boolean | null>(false);
 
   const isAdmin = localStorage.getItem("isAdmin");
-
   useEffect(() => {
     if (isAdmin === "true") setAdmin(true);
     else if (isAdmin === "false") setAdmin(false);
@@ -52,8 +50,6 @@ const TableDisplay = () => {
 
   const user = state.users.user;
   let books = state.books.list;
-
-  // user: "6339d7f6d860fa5b5186f848"    books: "6339d7f6d860fa5b5186f848"
 
   function remove(prop: mongoose.Schema.Types.ObjectId) {
     dispatch(
@@ -87,109 +83,109 @@ const TableDisplay = () => {
 
   return (
     <>
-      <Paper
-        sx={{
-          display: "flex",
-          width: "100%",
-          overflow: "hidden",
-          alignItems: "center",
-          justifyContent: "center",
-          paddingTop: "20px",
-        }}
+      <Box
+        width="100%"
+        display="flex"
+        alignItems="center"
+        justifyContent={"center"}
+        flexDirection={"column"}
+        pt="20px"
       >
-        <Box
-          display="flex"
-          alignItems="center"
-          flexDirection={"column"}
-          sx={{ minWidth: "95%" }}
+        <Box width={"60%"} sx={{ paddingBottom: "20px" }}>
+          <SearchFilter filterSearch={filterSearch} />
+        </Box>
+        <TableContainer
+          sx={{ height: "100%", maxHeight: "100%", width: "90%" }}
         >
-          <Box sx={{ paddingBottom: "20px" }}>
-            <SearchFilter filterSearch={filterSearch} />
-          </Box>
-          <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Title</TableCell>
-                  <TableCell>ISBN</TableCell>
-                  <TableCell>Authors</TableCell>
-                  <TableCell>Categories</TableCell>
-                  <TableCell>Status</TableCell>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Title</TableCell>
+                <TableCell>ISBN</TableCell>
+                <TableCell>Authors</TableCell>
+                <TableCell>Categories</TableCell>
+                <TableCell>Status</TableCell>
+                {admin ? (
+                  <>
+                    <TableCell align={"left"}>REMOVE</TableCell>
+                    <TableCell align={"left"}>UPDATE</TableCell>
+                  </>
+                ) : (
+                  ""
+                )}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {books.map((book) => (
+                <TableRow key={book.title}>
+                  <TableCell align={"left"}>{book.title}</TableCell>
+                  <TableCell align={"left"}>{book.isbn}</TableCell>
+                  <TableCell align={"left"}>
+                    {book.authors.join(", ")}
+                  </TableCell>
+                  <TableCell align={"left"}>
+                    {book.categories.join(", ")}
+                  </TableCell>
+                  {book.status === "available" ? (
+                    <>
+                      <TableCell align={"left"}>
+                        {book.status.charAt(0).toUpperCase() +
+                          book.status.slice(1)}
+                        :
+                        <Button
+                          variant="text"
+                          size="small"
+                          style={{ textDecoration: "none" }}
+                          onClick={() => lend(book._id)}
+                        >
+                          Lend Book
+                        </Button>
+                      </TableCell>
+                    </>
+                  ) : JSON.stringify(book.borrower?._id) ===
+                    JSON.stringify(user?._id) ? (
+                    <TableCell align={"left"}>Borrowed by you</TableCell>
+                  ) : (
+                    <TableCell align={"left"}>Unavailable</TableCell>
+                  )}
                   {admin ? (
                     <>
-                      <TableCell align={"left"}>REMOVE</TableCell>
-                      <TableCell align={"left"}>Update</TableCell>
+                      <TableCell
+                        align={"left"}
+                        onClick={() => remove(book._id)}
+                      >
+                        <Button
+                          variant="text"
+                          size="small"
+                          style={{ textDecoration: "none" }}
+                        >
+                          Remove
+                        </Button>
+                      </TableCell>
+                      <TableCell align={"left"}>
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={() => update(book._id, book)}
+                        >
+                          <Link
+                            to="/update"
+                            style={{ textDecoration: "none", color: "#90caf9" }}
+                          >
+                            UPDATE
+                          </Link>
+                        </Button>
+                      </TableCell>
                     </>
                   ) : (
                     ""
                   )}
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {books.map((book) => (
-                  <TableRow key={book.title}>
-                    <TableCell align={"left"}>{book.title}</TableCell>
-                    <TableCell align={"left"}>{book.isbn}</TableCell>
-                    <TableCell align={"left"}>
-                      {book.authors.join(", ")}
-                    </TableCell>
-                    <TableCell align={"left"}>
-                      {book.categories.join(", ")}
-                    </TableCell>
-                    {book.status === "available" ? (
-                      <>
-                        <TableCell align={"left"}>
-                          {book.status}
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => lend(book._id)}
-                          >
-                            Lend Book
-                          </Button>
-                        </TableCell>
-                      </>
-                    ) : JSON.stringify(book.borrower?._id) ===
-                      JSON.stringify(user?._id) ? (
-                      <TableCell align={"left"}>Borrowed by you</TableCell>
-                    ) : (
-                      <TableCell align={"left"}>Unavailable</TableCell>
-                    )}
-                    {admin ? (
-                      <>
-                        <TableCell
-                          align={"left"}
-                          onClick={() => remove(book._id)}
-                        >
-                          <Button variant="outlined" size="small">
-                            Remove
-                          </Button>
-                        </TableCell>
-                        <TableCell align={"left"}>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={() => update(book._id, book)}
-                          >
-                            <Link
-                              to="/update"
-                              style={{ textDecoration: "none", color: "white" }}
-                            >
-                              Update
-                            </Link>
-                          </Button>
-                        </TableCell>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </Paper>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </>
   );
 };

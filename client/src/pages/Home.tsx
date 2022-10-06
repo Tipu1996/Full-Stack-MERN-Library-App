@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Table from "components/Table";
-import Admin from "./Admin";
+import AdminPage from "./AdminPage";
 import Login from "./LoginPage";
 import PrivateRoute from "components/PrivateRoute";
 import UpdateAuthor from "components/UpdateAuthor";
@@ -23,7 +23,7 @@ const Home = () => {
           path="/admin"
           element={
             <PrivateRoute prop={"admin"}>
-              <Admin />
+              <AdminPage />
             </PrivateRoute>
           }
         />

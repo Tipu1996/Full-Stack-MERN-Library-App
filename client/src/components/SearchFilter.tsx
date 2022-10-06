@@ -5,7 +5,8 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import SearchIcon from "@mui/icons-material/Search";
-import { Paper, IconButton, TextField } from "@mui/material";
+import ClearAllIcon from "@mui/icons-material/ClearAll";
+import { IconButton, TextField } from "@mui/material";
 import { getBooks } from "redux/books";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "redux/store";
@@ -56,10 +57,22 @@ const SearchFilter = ({ filterSearch }: any) => {
     }
   };
 
+  function clearAll() {
+    const token = localStorage.getItem("jwtToken") || null;
+    dispatch(
+      getBooks({
+        jwtToken: token,
+        searchBy: "getAll",
+        url: "http://localhost:4000/api/v1/books/",
+        bookToAdd: null,
+      })
+    );
+  }
+
   return (
-    <Box display={"inline-flex"} sx={{ minwidth: "80" }}>
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Filter By</InputLabel>
+    <Box display={"flex"} width={"100%"}>
+      <FormControl sx={{ ml: "3%", flex: 0.9 }}>
+        <InputLabel id="filter-by">Filter By</InputLabel>
         <Select
           labelId="select-filter"
           id="select-filter"
@@ -73,39 +86,40 @@ const SearchFilter = ({ filterSearch }: any) => {
           <MenuItem value={"category"}>Category</MenuItem>
         </Select>
       </FormControl>
-      <Paper
-        component="form"
-        sx={{
-          p: "2px 4px",
-          display: "flex",
-          alignItems: "center",
+      <TextField
+        sx={{ ml: "3%", flex: 1 }}
+        placeholder="Search Books"
+        inputProps={{ "aria-label": "search books" }}
+        onChange={(event) => {
+          setSearch(event.target.value);
         }}
+        onKeyPress={(event) => {
+          event.key === "Enter" && event.preventDefault();
+          event.key === "Enter" && searchClick(event);
+          event.key === "Enter" && filterSearch();
+        }}
+      />
+      <IconButton
+        onClick={(event) => {
+          searchClick(event);
+          filterSearch();
+        }}
+        type="button"
+        sx={{ p: "10px", ml: "3%" }}
+        aria-label="search"
       >
-        <TextField
-          sx={{ ml: 1, flex: 1 }}
-          placeholder="Search Books"
-          inputProps={{ "aria-label": "search books" }}
-          onChange={(event) => {
-            setSearch(event.target.value);
-          }}
-          onKeyPress={(event) => {
-            event.key === "Enter" && event.preventDefault();
-            event.key === "Enter" && searchClick(event);
-            event.key === "Enter" && filterSearch();
-          }}
-        />
-        <IconButton
-          onClick={(event) => {
-            searchClick(event);
-            filterSearch();
-          }}
-          type="button"
-          sx={{ p: "10px" }}
-          aria-label="search"
-        >
-          <SearchIcon />
-        </IconButton>
-      </Paper>
+        <SearchIcon />
+      </IconButton>
+      <IconButton
+        onClick={() => {
+          clearAll();
+        }}
+        type="button"
+        sx={{ p: "10px" }}
+        aria-label="search"
+      >
+        <ClearAllIcon />
+      </IconButton>
     </Box>
   );
 };

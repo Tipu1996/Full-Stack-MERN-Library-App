@@ -1,33 +1,15 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Grid,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "redux/configureStore";
 import { AppDispatch } from "redux/store";
-import { getUser, getUsers } from "redux/users";
-import { User } from "types";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import { getUser } from "redux/users";
 import { getBooks, returnBook } from "redux/books";
 import mongoose from "mongoose";
 
 const DashBoard = () => {
   const dispatch = useDispatch<AppDispatch>();
   const state = useSelector((state: RootState) => state);
-  const [isAdmin] = useState(localStorage.getItem("isAdmin"));
-  const [showUsers, setShowUsers] = useState(false);
-  const [allUsers, setAllUsers] = useState<User[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("jwtToken") || null;
@@ -62,21 +44,6 @@ const DashBoard = () => {
     if (tempPic) setPic(tempPic);
   }, [tempPic]);
 
-  const getUsersClick = () => {
-    const token = localStorage.getItem("jwtToken");
-    setShowUsers(showUsers ? false : true);
-    dispatch(
-      getUsers({
-        jwtToken: token,
-        url: "http://localhost:4000/api/v1/users/",
-      })
-    );
-  };
-
-  useEffect(() => {
-    setAllUsers(state.users.list);
-  }, [showUsers, allUsers, state.users.list]);
-
   function returning(bookId: mongoose.Schema.Types.ObjectId) {
     const user = localStorage.getItem("userId");
     dispatch(
@@ -90,45 +57,6 @@ const DashBoard = () => {
 
   return (
     <>
-      {isAdmin === "true" ? (
-        <Box textAlign="center">
-          <Button
-            variant="outlined"
-            type="button"
-            style={{ color: "white" }}
-            sx={{ p: "7px", mt: "10px" }}
-            aria-label="search"
-            onClick={() => getUsersClick()}
-          >
-            Get All Registered Users (Admin Right)
-            {!showUsers ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
-          </Button>
-        </Box>
-      ) : null}
-      {showUsers ? (
-        <TableContainer sx={{ maxHeight: "100%", width: "90%" }}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Borrowed Books</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {allUsers.map((user) => (
-                <TableRow key={user.email}>
-                  <TableCell align={"left"}>{user.firstName}</TableCell>
-                  <TableCell align={"left"}>{user.email}</TableCell>
-                  <TableCell align={"left"}>
-                    {JSON.stringify(user.borrowedBooks)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) : null}
       <Box
         display={"flex"}
         justifyContent="center"
@@ -150,14 +78,11 @@ const DashBoard = () => {
       </Box>
       {user ? (
         <>
-          <Box
-            justifyContent="left"
-            alignItems={"center"}
-            m={"20px 0 10px 20px  "}
-          >
-            <Typography align="center" variant="body1">
+          <Box m={"20px 0 10px 20px"}>
+            <Typography align="center" variant="body1" mb={"10px"}>
               Name:{"\u00A0"}
               {user.firstName}
+              {"\u00A0"}
               {user.lastName}
             </Typography>
             <Typography align="center" variant="body1">
@@ -167,23 +92,24 @@ const DashBoard = () => {
           </Box>
           {allBooks.map((book) =>
             user._id === book?.borrower?._id ? (
-              <Grid key={book.isbn}>
-                <Typography align="center" variant="body1">
+              <Box m={"20px 0 10px 20px"} key={book.isbn}>
+                <Typography variant="body1">
                   Title:{"\u00A0"}
                   {book.title}
                 </Typography>
-                <Typography align="center" variant="body1">
+                <Typography mt={"10px"} variant="body1">
                   Borrow Date:{"\u00A0"}
-                  {JSON.stringify(book.borrowDate)}{" "}
+                  {JSON.stringify(book.borrowDate)}
                 </Typography>
                 <Button
+                  sx={{ justifyContent: "center", mt: "10px" }}
                   variant="outlined"
                   size="small"
                   onClick={() => returning(book._id)}
                 >
                   Return Book
                 </Button>
-              </Grid>
+              </Box>
             ) : null
           )}
         </>
