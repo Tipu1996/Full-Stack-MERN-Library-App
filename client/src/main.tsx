@@ -1,9 +1,9 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import App from "components/App";
-import store from "redux/configureStore";
-import "index.css";
+import App from "./App";
+import store from "./redux/configureStore";
+
 import { BrowserRouter as Router } from "react-router-dom";
 
 const container = document.getElementById("root")!;
@@ -22,7 +22,7 @@ fetch("http://localhost:4000/api/google-client-id")
 						<App />
 					</Router>
 				</Provider>
-			</GoogleOAuthProvider>
+			</GoogleOAuthProvider>,
 		);
 	})
 	.catch((error) => {

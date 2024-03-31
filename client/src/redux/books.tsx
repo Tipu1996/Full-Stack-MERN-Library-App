@@ -1,135 +1,134 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import mongoose from "mongoose";
 import { Book } from "types";
+
+const url = "http://localhost:4000/api/v1";
+
+axios.interceptors.request.use(
+  function (config) {
+    const token = localStorage.getItem("jwtToken");
+    if (token) config.headers!["Authorization"] = "Bearer " + token;
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
 
 export interface booksState {
   list: Book[];
+  cartList: Book[];
+  book: Book | null;
+  numberInCart: number;
   status: string;
 }
 
 const initialState: booksState = {
   list: [],
+  cartList: [],
+  book: null,
+  numberInCart: 0,
   status: "",
 };
 
 interface asyncObject {
-  searchBy: string;
-  url: string;
-  bookToAdd?: object | null;
-  jwtToken?: string | null;
-  bookId?: mongoose.Schema.Types.ObjectId | null;
+  searchBy?: string;
+  search?: string;
+  bookToAdd?: Book | null;
+  bookId?: string | null;
 }
 
 export const getBooks = createAsyncThunk(
   "books/getBooks",
-  async ({ searchBy, url, jwtToken }: asyncObject) => {
+  async ({ search, searchBy }: asyncObject) => {
     if (searchBy === "getAll") {
-      return axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-        })
-        .then((response) => response.data);
+      return axios.get(`${url}/books/`).then((response) => response.data);
     } else if (searchBy === "getByTitle") {
-      return axios.get(url).then((response) => response.data);
+      return axios
+        .get(`${url}/books/title/${search}`)
+        .then((response) => response.data);
+    } else if (searchBy === "getByIsbn") {
+      return axios
+        .get(`${url}/books/isbn/${search}`)
+        .then((response) => response.data);
     } else if (searchBy === "getByAuthor") {
-      return axios.get(url).then((response) => response.data);
+      return axios
+        .get(`${url}/books/author/${search}`)
+        .then((response) => response.data);
     } else if (searchBy === "getByStatus") {
-      return axios.get(url).then((response) => response.data);
+      return axios
+        .get(`${url}/books/status/${search}`)
+        .then((response) => response.data);
     } else if (searchBy === "getByCategory") {
-      return axios.get(url).then((response) => response.data);
+      return axios
+        .get(`${url}/books/category/${search}`)
+        .then((response) => response.data);
     }
   }
 );
 
 export const addBook = createAsyncThunk(
   "books/addBook",
-  async ({ searchBy, url, bookToAdd }: asyncObject) => {
-    if (searchBy === "addBook") {
-      return axios.post(url, bookToAdd).then((response) => response.data);
-    }
+  async ({ bookToAdd }: asyncObject, { rejectWithValue }) => {
+    return axios
+      .post(`${url}/books/`, bookToAdd)
+      .then((response) => response.data)
+      .catch((error) => {
+        return rejectWithValue(error.response.data);
+      });
   }
 );
 
 export const removeBook = createAsyncThunk(
   "books/removeBook",
-  async ({ searchBy, url, bookId }: asyncObject) => {
-    if (searchBy === "removeBook") {
-      return axios
-        .post(`${url}/removebook/${bookId}`, {})
-        .then((response) => response.data);
-    }
+  async ({ bookId }: asyncObject) => {
+    return axios
+      .delete(`${url}/books/${bookId}`, {})
+      .then((response) => response.data);
   }
 );
 
 export const addAuthor = createAsyncThunk(
   "books/addAuthor",
-  async ({
-    url,
-    bookId,
-    authors,
-  }: {
-    url: string;
-    bookId: string;
-    authors: string;
-  }) => {
-    const connectedAuthors = authors.replace(", ", "_");
+  async ({ bookId, author }: { bookId: string; author: string }) => {
     return axios
-      .post(`${url}/${bookId}/${connectedAuthors}`, {})
+      .post(`${url}/books/authors/${bookId}`, { author })
       .then((response) => response.data);
   }
 );
 
-export const lendBook = createAsyncThunk(
-  "books/lendBook",
-  async ({
-    url,
-    bookId,
-    userId,
-  }: {
-    url: string;
-    bookId: mongoose.Schema.Types.ObjectId | null;
-    userId: mongoose.Schema.Types.ObjectId | null;
-  }) => {
+export const getBook = createAsyncThunk(
+  "books/getBook",
+  async ({ bookId }: { bookId: string }) => {
     return axios
-      .get(`${url}/${bookId}/user/${userId}`)
-      .then((response) => response.data);
-  }
-);
-
-export const returnBook = createAsyncThunk(
-  "books/returnBook",
-  async ({
-    url,
-    bookId,
-    userId,
-  }: {
-    url: string;
-    bookId: mongoose.Schema.Types.ObjectId | null;
-    userId: mongoose.Schema.Types.ObjectId | null;
-  }) => {
-    return axios
-      .get(`${url}/${bookId}/user/${userId}`)
+      .get(`${url}/books/${bookId}`)
       .then((response) => response.data);
   }
 );
 
 export const removeAuthor = createAsyncThunk(
   "books/removeAuthor",
-  async ({
-    url,
-    bookId,
-    authors,
-  }: {
-    url: string;
-    bookId: string;
-    authors: string;
-  }) => {
-    const connectedAuthors = authors.replace(", ", "_");
+  async ({ bookId, author }: { bookId: string; author: string }) => {
     return axios
-      .post(`${url}/${bookId}/${connectedAuthors}`, {})
+      .put(`${url}/books/author/${bookId}`, { author })
+      .then((response) => response.data);
+  }
+);
+
+export const lendBook = createAsyncThunk(
+  "books/lendBook",
+  async ({ bookId, userId }: { bookId: string; userId: string }) => {
+    return axios
+      .get(`${url}/books/lend/${bookId}/user/${userId}`)
+      .then((response) => response.data);
+  }
+);
+
+export const returnBook = createAsyncThunk(
+  "books/returnBook",
+  async ({ bookId, userId }: { bookId: string; userId: string }) => {
+    return axios
+      .get(`${url}/books/return/${bookId}/user/${userId}`)
       .then((response) => response.data);
   }
 );
@@ -141,6 +140,19 @@ const slice = createSlice({
     reduxInitialState: (state) => {
       state.list = [];
       state.status = "";
+    },
+    addedToCart: (state, action) => {
+      state.cartList.push(action.payload);
+      state.numberInCart++;
+    },
+    removedFromCart: (state, action) => {
+      const index = state.cartList.indexOf(action.payload);
+      state.cartList.splice(index, 1);
+      state.numberInCart--;
+    },
+    clearedCart: (state) => {
+      state.cartList = [];
+      state.numberInCart = 0;
     },
   },
   extraReducers: (builder) => {
@@ -162,7 +174,18 @@ const slice = createSlice({
       state.list.push(action.payload);
       state.status = "success";
     });
-    builder.addCase(addBook.rejected, (state) => {
+    builder.addCase(addBook.rejected, (state, action) => {
+      console.log("Something went wrong", action.payload);
+      state.status = "failed";
+    });
+    builder.addCase(getBook.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(getBook.fulfilled, (state, action) => {
+      state.book = action.payload;
+      state.status = "success";
+    });
+    builder.addCase(getBook.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });
@@ -247,6 +270,7 @@ const slice = createSlice({
   },
 });
 
-export const { reduxInitialState } = slice.actions;
-
 export default slice.reducer;
+
+export const { reduxInitialState, addedToCart, removedFromCart, clearedCart } =
+  slice.actions;

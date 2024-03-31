@@ -1,21 +1,19 @@
-import mongoose from "mongoose";
-
 export enum statusType {
   available = "available",
   borrowed = "borrowed",
 }
 
 export type Book = {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id?: string;
   title: string;
   isbn: string;
   description: string;
   publisher: string;
   authors: string[];
   categories: string[];
-  status: statusType;
+  status: "available" | "borrowed";
   borrower: null | User;
-  publishDate: Date;
+  publishDate: Date | null;
   borrowDate: Date | null;
   returnDate: Date | null;
 };
@@ -105,10 +103,15 @@ export const columns: readonly Column[] = [
 ];
 
 export type User = {
-  _id: mongoose.Schema.Types.ObjectId;
+  _id: string;
   firstName: string;
   lastName: string;
   email: string;
   isAdmin: boolean;
-  borrowedBooks: mongoose.Schema.Types.ObjectId[] | Book[];
+  isVerified: boolean;
+  borrowedBooks: Book[];
 };
+
+export interface FilterSearch {
+  filterSearch: () => any;
+}

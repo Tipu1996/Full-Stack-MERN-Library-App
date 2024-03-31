@@ -4,16 +4,14 @@ const Forbidden = () => {
   const navigate = useNavigate();
 
   setTimeout(() => {
-    navigate("/login");
-  }, 5000);
+    navigate("/");
+  }, 3000);
 
   return (
-    <>
-      <h3>
-        Only Users with Admin rights can have access to this page; You will be
-        redirected to the login page
-      </h3>
-    </>
+    <h3>
+      Only Users with Admin rights can have access to this page; You will be
+      redirected to the home page in 3 seconds
+    </h3>
   );
 };
 

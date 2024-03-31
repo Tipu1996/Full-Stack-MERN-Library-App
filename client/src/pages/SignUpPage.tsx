@@ -1,9 +1,8 @@
-import Login from "../components/Login/Login";
-import LoginWithGoogle from "../components/Login/LoginWithGoogle";
+import SignUp from "../components/Login/SignUp";
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-const LoginPage = () => {
+const SignUpPage = () => {
 	const loggedin = localStorage.getItem("signedIn");
 	if (loggedin) {
 		return (
@@ -14,9 +13,8 @@ const LoginPage = () => {
 	}
 	return (
 		<>
-			<Login />
-			<LoginWithGoogle />
+			<SignUp />
 		</>
 	);
 };
-export default LoginPage;
+export default SignUpPage;

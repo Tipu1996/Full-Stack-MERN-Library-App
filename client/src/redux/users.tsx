@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import mongoose from "mongoose";
 import { User } from "types";
+
+const url = "http://localhost:4000/api/v1";
 
 export interface usersState {
   list: User[];
@@ -24,49 +25,132 @@ const initialState: usersState = {
 interface asyncObject {
   searchBy?: string;
   body?: object;
-  url: string;
+  url?: string;
   header?: object;
-  jwtToken?: string | null;
+  userId?: string;
 }
 
-export const getUsers = createAsyncThunk(
-  "users/getUsers",
-  async ({ url, jwtToken }: asyncObject) => {
-    return axios
-      .get(url, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      })
-      .then((response) => response.data);
+axios.interceptors.request.use(
+  function (config) {
+    const token = localStorage.getItem("jwtToken");
+    if (token) config.headers!["Authorization"] = "Bearer " + token;
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
   }
 );
 
+export const getUsers = createAsyncThunk("users/getUsers", async () => {
+  return axios.get(`${url}/users`).then((response) => response.data);
+});
+
 export const getUser = createAsyncThunk(
   "users/getUser",
-  async ({
-    url,
-    jwtToken,
-    userId,
-  }: {
-    url: string;
-    userId: mongoose.Schema.Types.ObjectId;
-    jwtToken: string;
-  }) => {
+  async ({ userId }: { userId: string }) => {
     return axios
-      .get(`${url}/user/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      })
+      .get(`${url}/users/user/${userId}`)
       .then((response) => response.data);
   }
 );
 
 export const loginUser = createAsyncThunk(
   "users/loginUser",
-  async ({ url, header, body }: asyncObject) => {
-    return axios.post(url, body, header).then((response) => response.data);
+  async ({ header, body }: asyncObject) => {
+    return axios
+      .post(`${url}/users/login`, body, header)
+      .then((response) => response.data);
+  }
+);
+
+export const signUpUser = createAsyncThunk(
+  "users/signUpUser",
+  async (
+    body: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+    },
+    { rejectWithValue }
+  ) => {
+    return axios
+      .post(`${url}/users/signup`, body)
+      .then((response) => response.data)
+      .catch((error) => rejectWithValue(error.response.data));
+  }
+);
+
+export const setCodeForPasswordReset = createAsyncThunk(
+  "users/SetCodeForPasswordReset",
+  async (
+    body: {
+      email: string;
+    },
+    { rejectWithValue }
+  ) => {
+    return axios
+      .post(`${url}/users/user/setCodeForPasswordReset`, body)
+      .then((response) => response.data)
+      .catch((error) => rejectWithValue(error.response.data));
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "users/resetPassword",
+  async (
+    body: {
+      email: string;
+      code: string;
+      password: string;
+    },
+    { rejectWithValue }
+  ) => {
+    return axios
+      .post(`${url}/users/user/resetPassword`, body)
+      .then((response) => response.data)
+      .catch((error) => rejectWithValue(error.response.data));
+  }
+);
+
+export const signInUser = createAsyncThunk(
+  "users/SignInUser",
+  async (
+    body: {
+      email: string;
+      password: string;
+    },
+    { rejectWithValue }
+  ) => {
+    return axios
+      .post(`${url}/users/signin`, body)
+      .then((response) => response.data)
+      .catch((error) => rejectWithValue(error.response.data));
+  }
+);
+
+export const verifyUser = createAsyncThunk(
+  "users/verifyUser",
+  async (
+    body: {
+      email: string;
+      code: string;
+    },
+    { rejectWithValue }
+  ) => {
+    return axios
+      .post(`${url}/users/verify`, body)
+      .then((response) => response.data)
+      .catch((error) => rejectWithValue(error.response.data));
+  }
+);
+
+export const removeUser = createAsyncThunk(
+  "books/removeUser",
+  async ({ userId }: asyncObject) => {
+    return axios
+      .delete(`${url}/users/${userId}`, {})
+      .then((response) => response.data);
   }
 );
 
@@ -111,6 +195,78 @@ const slice = createSlice({
       state.status = "success";
     });
     builder.addCase(getUser.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(signUpUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(signUpUser.fulfilled, (state) => {
+      state.status = "success";
+    });
+    builder.addCase(signUpUser.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(setCodeForPasswordReset.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(setCodeForPasswordReset.fulfilled, (state) => {
+      state.status = "success";
+    });
+    builder.addCase(setCodeForPasswordReset.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(resetPassword.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(resetPassword.fulfilled, (state) => {
+      state.status = "success";
+    });
+    builder.addCase(resetPassword.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(signInUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(signInUser.fulfilled, (state, action) => {
+      state.jwtToken = action.payload.token;
+      state.isAdmin = action.payload.user.isAdmin;
+      state.picture = action.payload.user.picture;
+      localStorage.setItem("jwtToken", action.payload.token);
+      localStorage.setItem("isAdmin", action.payload.user.isAdmin);
+      localStorage.setItem("picture", action.payload.user.picture);
+      localStorage.setItem("signedIn", "true");
+      localStorage.setItem("userId", JSON.stringify(action.payload.user._id));
+      state.status = "success";
+    });
+    builder.addCase(signInUser.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(verifyUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(verifyUser.fulfilled, (state, action) => {
+      state.status = "success";
+    });
+    builder.addCase(verifyUser.rejected, (state) => {
+      console.log("Something went wrong");
+      state.status = "failed";
+    });
+    builder.addCase(removeUser.pending, (state) => {
+      state.status = "loading";
+    });
+    builder.addCase(removeUser.fulfilled, (state, action) => {
+      let index = state.list.indexOf(action.payload);
+      if (index !== -1) {
+        state.list.splice(index, 1);
+      }
+      state.status = "success";
+    });
+    builder.addCase(removeUser.rejected, (state) => {
       console.log("Something went wrong");
       state.status = "failed";
     });
