@@ -19,6 +19,8 @@ export const GOOGLE_CLIENT_ID = process.env['GOOGLE_CLIENT_ID'] as string
 export const GOOGLE_CLIENT_SECRET = process.env[
   'GOOGLE_CLIENT_SECRET'
 ] as string
+export const AUTHORIZATION_CODE = process.env['AUTHORIZATION_CODE'] as string
+export const OAUTH_REFRESH_TOKEN = process.env['OAUTH_REFRESH_TOKEN'] as string
 export const MONGODB_URI = process.env['MONGODB_URI'] as string
 // Use this instead if you want to use local mongodb
 // export const MONGODB_URI = (

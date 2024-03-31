@@ -1,14 +1,17 @@
-import Book, { BookDocument } from '../models/Book'
+import Book from '../models/Book'
 import { NotFoundError } from '../helpers/apiError'
+import { BookDocument } from '../types'
 
 const getAll = async (): Promise<BookDocument[]> => {
   return Book.find().sort({ title: 1 }).populate('borrower')
 }
 
 const getByTitle = async (title: string): Promise<BookDocument[]> => {
-  const foundBook = Book.find({ title: title }).sort({
-    name: 1 /*publishedYear: -1*/,
-  })
+  const foundBook = Book.find({ title: { $regex: title, $options: 'i' } }).sort(
+    {
+      title: 1,
+    }
+  )
   if (!foundBook) {
     throw new NotFoundError(`Book titled: ${title} not found`)
   }
@@ -17,19 +20,22 @@ const getByTitle = async (title: string): Promise<BookDocument[]> => {
 }
 
 const getByAuthor = async (author: string): Promise<BookDocument[]> => {
-  const foundBook = Book.find({ authors: { $all: [author] } }).sort({
-    name: 1 /*publishedYear: -1*/,
+  const foundBook = Book.find({
+    authors: { $regex: author, $options: 'i' },
+  }).sort({
+    title: 1,
   })
   if (!foundBook) {
     throw new NotFoundError(`Books authored: ${author} not found`)
   }
-
   return foundBook
 }
 
 const getByCategory = async (category: string): Promise<BookDocument[]> => {
-  const foundBook = Book.find({ categories: { $all: [category] } }).sort({
-    name: 1 /*publishedYear: -1*/,
+  const foundBook = Book.find({
+    categories: { $regex: category, $options: 'i' },
+  }).sort({
+    title: 1,
   })
   if (!foundBook) {
     throw new NotFoundError(`Books of category: ${category} not found`)
@@ -39,8 +45,8 @@ const getByCategory = async (category: string): Promise<BookDocument[]> => {
 }
 
 const getByIsbn = async (isbn: string): Promise<BookDocument[]> => {
-  const foundBook = Book.find({ isbn: isbn }).sort({
-    name: 1 /*publishedYear: -1*/,
+  const foundBook = Book.find({ isbn: { $regex: isbn } }).sort({
+    title: 1,
   })
   if (!foundBook) {
     throw new NotFoundError(`Book with ISBN: ${isbn} not found`)
@@ -50,8 +56,10 @@ const getByIsbn = async (isbn: string): Promise<BookDocument[]> => {
 }
 
 const getByStatus = async (status: string): Promise<BookDocument[]> => {
-  const foundBook = Book.find({ status: status }).sort({
-    name: 1 /*publishedYear: -1*/,
+  const foundBook = Book.find({
+    status: { $regex: status, $options: 'i' },
+  }).sort({
+    title: 1,
   })
   if (!foundBook && status === 'borrowed') {
     throw new NotFoundError('There are no Books that are available')
@@ -102,6 +110,10 @@ const returnBook = async (bookId: string): Promise<BookDocument> => {
   return foundBook
 }
 
+const getBook = async (bookId: string): Promise<BookDocument | null> => {
+  return await Book.findById(bookId)
+}
+
 const removeBook = async (bookId: string): Promise<BookDocument> => {
   const success = await Book.findByIdAndRemove(bookId)
   if (!success) throw new NotFoundError('Book not found')
@@ -116,12 +128,13 @@ const addAuthor = async (
   bookId: string,
   authors: string
 ): Promise<BookDocument> => {
-  const authorlist = authors.split('_')
+  const tempValue = authors.split(',')
+  const result: string[] = tempValue.map((val: string) => val.trim())
   const updatedBook = await Book.findOneAndUpdate(
     { _id: bookId },
     {
       $addToSet: {
-        authors: authorlist,
+        authors: result,
       },
     },
     { new: true }
@@ -134,14 +147,13 @@ const addAuthor = async (
 
 const removeAuthor = async (
   bookId: string,
-  authors: string
+  author: string
 ): Promise<BookDocument> => {
-  const authorlist = authors.split('_')
   const updatedBook = await Book.findOneAndUpdate(
     { _id: bookId },
     {
       $pull: {
-        authors: { $in: authorlist },
+        authors: { $in: author },
       },
     },
     { new: true }
@@ -161,6 +173,7 @@ export default {
   getByStatus,
   lendBook,
   returnBook,
+  getBook,
   removeBook,
   addBook,
   addAuthor,

@@ -18,11 +18,9 @@ export default function () {
             email: parsedToken.payload.email,
             firstName: parsedToken.payload.given_name,
             lastName: parsedToken.payload.family_name,
-            isAdmin:
-              parsedToken.payload.email === 'tipu.solehria@gmail.com'
-                ? true
-                : false,
+            isAdmin: parsedToken.payload.email === 'tipu.solehria@gmail.com',
             picture: parsedToken.payload.picture,
+            isVerified: true,
           })
           user.save()
           done(null, user, 'Registered New User')

@@ -18,7 +18,7 @@ const authCheck = (req: Request, res: Response, next: NextFunction) => {
     }
     throw new ForbiddenError()
   } catch (error) {
-    throw new ForbiddenError()
+    throw new ForbiddenError('You are not signed in')
   }
 }
 export default authCheck

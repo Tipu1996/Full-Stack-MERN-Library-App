@@ -1,5 +1,5 @@
 import User from '../models/User'
-import { NotFoundError } from '../helpers/apiError'
+import { BadRequestError, NotFoundError } from '../helpers/apiError'
 import { UserDocument } from '../types'
 
 const addUser = async (user: UserDocument): Promise<UserDocument> => {
@@ -7,8 +7,8 @@ const addUser = async (user: UserDocument): Promise<UserDocument> => {
 }
 
 const getUsers = async (): Promise<UserDocument[]> => {
-  return User.find()
-    .sort({ firstName: 1 /*publishedYear: -1*/ })
+  return await User.find({}, { password: 0 })
+    .sort({ firstName: 1 })
     .populate('borrowedBooks')
 }
 
@@ -42,8 +42,71 @@ const returnBook = async (
   return foundUser
 }
 
-const getUser = async (userId: string): Promise<any> => {
-  return User.findOne({ _id: userId }).populate('borrowedBooks')
+const getUser = async (userId: string): Promise<UserDocument | null> => {
+  return await User.findOne({ _id: userId }, { password: 0 }).populate(
+    'borrowedBooks'
+  )
 }
 
-export default { addUser, getUsers, lendBook, returnBook, getUser }
+const signUp = async (user: UserDocument): Promise<UserDocument> => {
+  return user.save()
+}
+
+const verifyUser = async (email: string): Promise<UserDocument> => {
+  const foundUser = await User.findOneAndUpdate(
+    { email },
+    { $set: { code: null, isVerified: true } },
+    { new: true }
+  )
+  if (!foundUser) {
+    throw new BadRequestError('Cannot Find a user with the email')
+  }
+  return foundUser
+}
+
+const setCodeForPasswordReset = async (
+  email: string,
+  code: string
+): Promise<UserDocument> => {
+  const foundUser = await User.findOneAndUpdate(
+    { email },
+    { $set: { code, isVerified: true } }
+  )
+  if (!foundUser) {
+    throw new BadRequestError('Cannot Find a user with the email')
+  }
+  return foundUser
+}
+
+const resetPassword = async (
+  email: string,
+  password: string
+): Promise<UserDocument> => {
+  const foundUser = await User.findOneAndUpdate(
+    { email },
+    { $set: { code: null, password } }
+  )
+  if (!foundUser) {
+    throw new BadRequestError('Cannot Find a user with the email')
+  }
+  return foundUser
+}
+
+const removeUser = async (userId: string): Promise<UserDocument> => {
+  const success = await User.findByIdAndRemove(userId)
+  if (!success) throw new NotFoundError('user not found in DB')
+  return success
+}
+
+export default {
+  addUser,
+  getUsers,
+  lendBook,
+  returnBook,
+  getUser,
+  signUp,
+  verifyUser,
+  setCodeForPasswordReset,
+  resetPassword,
+  removeUser,
+}

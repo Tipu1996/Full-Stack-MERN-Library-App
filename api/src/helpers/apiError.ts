@@ -57,3 +57,23 @@ export class BadRequestError extends ApiError {
     super(statusCode, message, source)
   }
 }
+
+export class ConflictError extends ApiError {
+  constructor(
+    readonly message: string = 'Already Exists',
+    readonly statusCode: number = 409,
+    source?: Error | any
+  ) {
+    super(statusCode, message, source)
+  }
+}
+
+export class TemporaryRedirect extends ApiError {
+  constructor(
+    readonly message: string = 'Please Verify your Account',
+    readonly statusCode: number = 307,
+    source?: Error | any
+  ) {
+    super(statusCode, message, source)
+  }
+}

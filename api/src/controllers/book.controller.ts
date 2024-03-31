@@ -3,6 +3,7 @@ import bookServices from '../services/book.service'
 import userServices from '../services/user.service'
 import { BadRequestError } from '../helpers/apiError'
 import Book from '../models/Book'
+import { z, ZodError } from 'zod'
 
 export const getAll = async (
   req: Request,
@@ -153,6 +154,22 @@ export const returnBook = async (
   }
 }
 
+export const getBook = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    res.json(await bookServices.getBook(req.params.bookId))
+  } catch (error) {
+    if (error instanceof Error && error.name == 'ValidationError') {
+      next(new BadRequestError('Invalid Request', 400, error))
+    } else {
+      next(error)
+    }
+  }
+}
+
 export const removeBook = async (
   req: Request,
   res: Response,
@@ -170,6 +187,23 @@ export const removeBook = async (
     }
   }
 }
+
+const BookZod = z.object({
+  title: z.string(),
+  isbn: z.string(),
+  description: z.string(),
+  publisher: z.string(),
+  authors: z.string().array(),
+  categories: z.string().array(),
+  status: z.enum(['borrowed', 'available']),
+  borrower: z.null(),
+  publishDate: z.date({
+    required_error: 'Please enter a date',
+    invalid_type_error: 'Invalid Date',
+  }),
+  borrowDate: z.null(),
+  returnDate: z.null(),
+})
 
 export const addBook = async (
   req: Request,
@@ -204,9 +238,15 @@ export const addBook = async (
       borrowDate,
       returnDate,
     })
-
-    await bookServices.addBook(book)
-    res.json(book)
+    try {
+      BookZod.parse(book)
+      await bookServices.addBook(book)
+      res.json(book)
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({ success: false, error: error.flatten() })
+      } else next(error)
+    }
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
       next(new BadRequestError('Invalid Request', 400, error))
@@ -223,7 +263,7 @@ export const addAuthor = async (
 ) => {
   try {
     const bookId = req.params.bookId
-    const authors = req.params.authors
+    const authors = req.body.author
     res.json(await bookServices.addAuthor(bookId, authors))
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {
@@ -241,7 +281,7 @@ export const removeAuthor = async (
 ) => {
   try {
     const bookId = req.params.bookId
-    const authors = req.params.authors
+    const authors = req.body.author
     res.json(await bookServices.removeAuthor(bookId, authors))
   } catch (error) {
     if (error instanceof Error && error.name == 'ValidationError') {

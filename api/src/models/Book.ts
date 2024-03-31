@@ -1,24 +1,11 @@
-import mongoose, { Document } from 'mongoose'
-import { statusType } from '../types'
+import mongoose from 'mongoose'
+import { BookDocument, statusType } from '../types'
 
-export type BookDocument = Document & {
-  title: string
-  isbn: string
-  description: string
-  publisher: string
-  authors: string[]
-  categories: string[]
-  status: statusType
-  borrower: mongoose.Schema.Types.ObjectId | null
-  publishDate: Date
-  borrowDate: Date | null
-  returnDate: Date | null
-}
-
-const bookSchema = new mongoose.Schema({
+const bookSchema = new mongoose.Schema<BookDocument>({
   title: {
     type: String,
     required: true,
+    unique: true,
   },
   isbn: {
     type: String,
@@ -42,8 +29,9 @@ const bookSchema = new mongoose.Schema({
   },
   status: {
     type: String,
+    enum: Object.values(statusType),
     required: true,
-    default: 'available',
+    default: statusType.available,
   },
   borrower: {
     type: mongoose.Schema.Types.ObjectId,

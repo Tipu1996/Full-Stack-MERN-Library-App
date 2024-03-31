@@ -15,12 +15,25 @@ const userSchema = new mongoose.Schema<UserDocument>({
     unique: true,
     required: true,
   },
+  password: {
+    type: String,
+    default: null,
+  },
   picture: {
     type: String,
+    default: '/',
   },
   isAdmin: {
     type: Boolean,
     default: false,
+  },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  code: {
+    type: String,
+    default: null,
   },
   borrowedBooks: {
     type: [mongoose.Schema.Types.ObjectId],

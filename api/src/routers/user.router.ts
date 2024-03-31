@@ -1,30 +1,51 @@
 import express from 'express'
 import passport from 'passport'
-import jwt from 'jsonwebtoken'
-import { getUser, getUsers } from '../controllers/user.controller'
-import { JWT_SECRET } from '../util/secrets'
+import verfCode from '../middlewares/verfCode'
+import {
+  getUser,
+  getUsers,
+  login,
+  removeUser,
+  resetPassword,
+  setCodeForPasswordReset,
+  signIn,
+  signUp,
+  verifyUser,
+} from '../controllers/user.controller'
 import adminCheck from '../middlewares/adminCheck'
-import authCheck from '../middlewares/authCheck'
-import { UserDocument } from '../types'
+import initialCheck from '../middlewares/initialCheck'
 
 const router = express.Router()
+
+router.get(
+  '/',
+  adminCheck,
+  passport.authenticate('jwt', { session: false }),
+  getUsers
+)
+
+router.get(
+  '/user/:userId',
+  passport.authenticate('jwt', { session: false }),
+  getUser
+)
 
 router.post(
   '/login',
   passport.authenticate('google-id-token', { session: false }),
-  (req, res) => {
-    const user = req.user as UserDocument
-    const info = req.authInfo
-    const picture = user.picture
-    const id = user._id.toString()
-    const isAdmin = user.isAdmin
-    const token = jwt.sign({ userId: id, isAdmin }, JWT_SECRET, {
-      expiresIn: '10m',
-    })
-
-    res.json({ token, id, isAdmin, info, picture, user })
-  }
+  login
 )
-router.get('/', adminCheck, getUsers)
-router.get('/user/:userId', authCheck, getUser)
+
+router.post('/signup', initialCheck, verfCode, signUp)
+
+router.post('/signin', signIn)
+
+router.post('/user/setCodeForPasswordReset', verfCode, setCodeForPasswordReset)
+
+router.post('/user/resetPassword', initialCheck, resetPassword)
+
+router.post('/verify', initialCheck, verifyUser)
+
+router.delete('/:userId', adminCheck, removeUser)
+
 export default router

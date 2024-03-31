@@ -1,8 +1,15 @@
 import mongoose, { Document } from 'mongoose'
 
-export enum statusType {
-  available = 'available',
-  borrowed = 'borrowed',
+export type UserDocument = Document & {
+  firstName: string
+  lastName: string
+  email: string
+  password: string | null
+  isAdmin: boolean
+  isVerified: boolean
+  code: string | null
+  picture: string
+  borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }
 
 export type BookDocument = Document & {
@@ -17,6 +24,11 @@ export type BookDocument = Document & {
   publishDate: Date
   borrowDate: Date | null
   returnDate: Date | null
+}
+
+export enum statusType {
+  available = 'available',
+  borrowed = 'borrowed',
 }
 
 export interface TokenObject {
@@ -39,14 +51,4 @@ export interface ParsedToken {
 }
 export interface VerifiedCallback {
   (error: any, user?: any, info?: any): void
-}
-
-export type UserDocument = Document & {
-  _id?: mongoose.Schema.Types.ObjectId
-  firstName: string
-  lastName: string
-  email: string
-  isAdmin: boolean
-  picture: string
-  borrowedBooks: mongoose.Schema.Types.ObjectId[]
 }

@@ -17,8 +17,7 @@ const adminCheck = (req: Request, res: Response, next: NextFunction) => {
         req.user = decodedUser
         return next()
       } else if (decodedUser.isAdmin === false) {
-        res.send('You are not an ADMIN')
-        throw new ForbiddenError()
+        next(new ForbiddenError('You are not an ADMIN'))
       }
     }
     throw new ForbiddenError()
