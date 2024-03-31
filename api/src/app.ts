@@ -29,7 +29,7 @@ app.use(express.json())
 app.use(passport.initialize())
 passport.use(loginWithGoogle())
 
-passport.use(JwtSignInStrategy(passport))
+passport.use(JwtSignInStrategy())
 
 app.get('/api/google-client-id', (req, res) => {
   const googleClientId = process.env.GOOGLE_CLIENT_ID
