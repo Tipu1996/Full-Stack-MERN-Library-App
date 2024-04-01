@@ -125,17 +125,36 @@ const ShowUsers = () => {
 											{user.isAdmin ? (
 												<p>isAdmin</p>
 											) : user.isVerified ? (
-												<Button
-													disabled
-													variant="text"
-													size="small"
-													style={{
-														color: "disabled",
-													}}>
-													<Tooltip title="Verified Account">
-														<DeleteIcon color="disabled" />
-													</Tooltip>
-												</Button>
+												user.borrowedBooks.length ===
+												0 ? (
+													<Button
+														variant="text"
+														size="small"
+														style={{
+															textDecoration:
+																"none",
+															color: "inherit",
+														}}
+														onClick={() =>
+															remove(user._id)
+														}>
+														<Tooltip title="Delete Account">
+															<DeleteIcon color="inherit" />
+														</Tooltip>
+													</Button>
+												) : (
+													<Button
+														disabled
+														variant="text"
+														size="small"
+														style={{
+															color: "disabled",
+														}}>
+														<Tooltip title="Verified Account">
+															<DeleteIcon color="disabled" />
+														</Tooltip>
+													</Button>
+												)
 											) : (
 												<Button
 													variant="text"
